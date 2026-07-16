@@ -1,36 +1,110 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Full-Stack Ecommerce App
+
+A full-scale ecommerce platform built with Next.js, NextAuth (Auth.js), and raw SQL — built as a deep-dive into full-stack architecture, from schema design to auth to fulfillment.
+
+## Tech Stack
+
+- **Framework:** Next.js (App Router)
+- **Auth:** NextAuth v4 (Credentials provider, JWT sessions)
+- **Database:** MySQL (raw SQL, no ORM)
+- **Language:** TypeScript
+- **Package Manager:** pnpm
+- **Containerization:** Docker & Docker Compose
+
+## Features
+
+- Custom auth (register, login, logout, session) via NextAuth
+- Customer & user accounts (supports customer-linked and admin/staff accounts)
+- Product catalog with brand/category filtering and search
+- Cart & checkout flow
+- Order management with itemized order history
+- Payment tracking (UPI, Card, Cash, NetBanking)
+- Fulfillment/shipment status tracking
+- Product reviews
+- Inventory management
+
+## Database Schema
+
+Core tables: `Customers`, `Users`, `Customer_address`, `Products`, `Inventory`, `Orders`, `OrderItems`, `Fulfillment`, `OrderPayment`, `Reviews`.
+
+Key design decisions:
+
+- `Users.customer_id` is nullable — supports non-customer (admin/staff) accounts
+- Prices are snapshotted in `OrderItems.amount` at time of purchase, decoupled from live `Products.price`
+- Cascading deletes on dependent records (addresses, orders, order items, fulfillment, payments)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Docker & Docker Compose
+
+### Setup (Docker)
+
+This project runs fully in Docker — Next.js app + MySQL, no local Node/MySQL install needed.
+
+1. Set up environment variables:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Fill in `.env` (app-level vars like NextAuth secret; DB connection vars are already set in `docker-compose.yml`):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+NEXTAUTH_SECRET=your-generated-secret
+NEXTAUTH_URL=http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Generate a secret:
 
-## Learn More
+```bash
+openssl rand -base64 32
+```
 
-To learn more about Next.js, take a look at the following resources:
+2. Start everything:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+docker compose up
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This spins up:
 
-## Deploy on Vercel
+- `web` — Next.js app on `http://localhost:3000` (hot reload enabled via volume mount)
+- `db` — MySQL 8.0 on `localhost:3306`, with data persisted in a named volume (`mysql_data`)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. Run your schema against the containerized DB (first time only):
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+docker compose exec db mysql -u root -p ecommerce < schema.sql
+```
+
+Visit `http://localhost:3000`.
+
+> **Note:** Inside Docker, the app connects to MySQL via hostname `db` (the compose service name), not `localhost`. Make sure your DB connection code reads `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` from environment variables rather than hardcoding `localhost`.
+
+## API Routes
+
+| Route                       | Method                | Description                              |
+| --------------------------- | --------------------- | ---------------------------------------- |
+| `/api/auth/register`        | POST                  | Create a new customer + user account     |
+| `/api/auth/[...nextauth]`   | GET/POST              | NextAuth login, logout, session handling |
+| `/api/auth/me`              | GET                   | Get current logged-in user               |
+| `/api/products`             | GET                   | List/search/filter products              |
+| `/api/cart`                 | GET/POST/PATCH/DELETE | Manage cart items                        |
+| `/api/orders`               | GET/POST              | Checkout & order history                 |
+| `/api/payments`             | POST                  | Initiate/track payment                   |
+| `/api/fulfillment/:orderId` | GET/PATCH             | Shipment tracking                        |
+| `/api/reviews`              | GET/POST/DELETE       | Product reviews                          |
+
+## Roadmap
+
+- [x] Docker setup for local dev (DB + app)
+- [ ] Production Dockerfile (multi-stage build, no volume mount)
+- [ ] Admin dashboard for inventory/order management
+- [ ] Product recommendations
+- [ ] Optional GraphQL layer for flexible product-page queries
+
+## License
+
+MIT — see [LICENSE](./LICENSE) for details.
