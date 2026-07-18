@@ -5,6 +5,11 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
   try {
+    const [rows] = await db.query("SELECT DATABASE()");
+    console.log(rows);
+
+    const [tables] = await db.query("SHOW TABLES");
+    console.log(tables);
     const { username, password, customer_name, mobile_number } =
       await req.json();
     const [existing] = await db.query(
@@ -12,7 +17,7 @@ export async function POST(req: Request) {
       [username],
     );
     if ((existing as any[]).length > 0) {
-      throw new Error("Username Taken");
+      return NextResponse.json({ error: "Username Taken" }, { status: 409 });
     }
     const [customerResult] = await db.query(
       "INSERT INTO Customers (customer_name, mobile_number) VALUES (?, ?)",
@@ -26,6 +31,7 @@ export async function POST(req: Request) {
     );
     return NextResponse.json({ username });
   } catch (err) {
-    return NextResponse.json({ error: err }, { status: 409 });
+    console.error(err);
+    return NextResponse.json({ error: err }, { status: 500 });
   }
 }

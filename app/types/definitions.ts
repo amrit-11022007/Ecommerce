@@ -13,3 +13,10 @@ export interface Product {
   name: string;
   price: number;
 }
+
+export interface UserData {
+  username: string;
+  password: string;
+  customerName: string;
+  mobileNumber: string;
+}

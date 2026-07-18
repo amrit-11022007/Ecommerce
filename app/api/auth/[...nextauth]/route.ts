@@ -16,7 +16,7 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials) {
         const [rows] = await db.query(
-          "SELECT * FROM users WHERE username = ?",
+          "SELECT * FROM Users WHERE username = ?",
           [credentials?.username],
         );
         const user = (rows as any[])[0];
