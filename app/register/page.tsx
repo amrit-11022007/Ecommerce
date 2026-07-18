@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { UserData } from "../types/definitions";
+import Input from "../components/Input";
+import Button from "../components/Button";
 
 export default function RegisterPage() {
   const [userData, setUserData] = useState<UserData>({
@@ -66,12 +68,16 @@ export default function RegisterPage() {
             <span className="mb-2 block text-sm font-medium text-slate-600">
               Username
             </span>
-            <input
-              className="w-full rounded-2xl border-0 bg-[#e9eef7] px-4 py-3 text-sm text-slate-700 outline-none shadow-[inset_8px_8px_16px_#c9d2e0,inset_-8px_-8px_16px_#ffffff] placeholder:text-slate-400"
+            <Input
               placeholder="Enter your username"
+              type="text"
+              name="username"
               value={userData.username}
-              onChange={(e) =>
-                setUserData((prev) => ({ ...prev, username: e.target.value }))
+              onChange={(value, field) =>
+                setUserData((prev) => ({
+                  ...prev,
+                  [field ?? "username"]: value,
+                }))
               }
             />
           </label>
@@ -80,13 +86,16 @@ export default function RegisterPage() {
             <span className="mb-2 block text-sm font-medium text-slate-600">
               Password
             </span>
-            <input
-              type="password"
-              className="w-full rounded-2xl border-0 bg-[#e9eef7] px-4 py-3 text-sm text-slate-700 outline-none shadow-[inset_8px_8px_16px_#c9d2e0,inset_-8px_-8px_16px_#ffffff] placeholder:text-slate-400"
+            <Input
               placeholder="Enter your password"
+              type="password"
+              name="password"
               value={userData.password}
-              onChange={(e) =>
-                setUserData((prev) => ({ ...prev, password: e.target.value }))
+              onChange={(value, field) =>
+                setUserData((prev) => ({
+                  ...prev,
+                  [field ?? "password"]: value,
+                }))
               }
             />
           </label>
@@ -95,14 +104,15 @@ export default function RegisterPage() {
             <span className="mb-2 block text-sm font-medium text-slate-600">
               Customer Name
             </span>
-            <input
-              className="w-full rounded-2xl border-0 bg-[#e9eef7] px-4 py-3 text-sm text-slate-700 outline-none shadow-[inset_8px_8px_16px_#c9d2e0,inset_-8px_-8px_16px_#ffffff] placeholder:text-slate-400"
+            <Input
               placeholder="Enter your full name"
+              type="text"
+              name="customerName"
               value={userData.customerName}
-              onChange={(e) =>
+              onChange={(value, field) =>
                 setUserData((prev) => ({
                   ...prev,
-                  customerName: e.target.value,
+                  [field ?? "customerName"]: value,
                 }))
               }
             />
@@ -112,26 +122,22 @@ export default function RegisterPage() {
             <span className="mb-2 block text-sm font-medium text-slate-600">
               Mobile Number
             </span>
-            <input
-              className="w-full rounded-2xl border-0 bg-[#e9eef7] px-4 py-3 text-sm text-slate-700 outline-none shadow-[inset_8px_8px_16px_#c9d2e0,inset_-8px_-8px_16px_#ffffff] placeholder:text-slate-400"
+            <Input
               placeholder="Enter your mobile number"
+              type="text"
+              name="mobileNumber"
               value={userData.mobileNumber}
-              onChange={(e) =>
+              onChange={(value, field) =>
                 setUserData((prev) => ({
                   ...prev,
-                  mobileNumber: e.target.value,
+                  [field ?? "mobileNumber"]: value,
                 }))
               }
             />
           </label>
         </div>
 
-        <button
-          type="submit"
-          className="mt-6 w-full rounded-2xl bg-[#e9eef7] px-4 py-3 text-sm font-semibold text-slate-700 shadow-[8px_8px_16px_#c7d0de,-8px_-8px_16px_#ffffff] transition hover:shadow-[6px_6px_12px_#c7d0de,-6px_-6px_12px_#ffffff] focus:outline-none"
-        >
-          Register
-        </button>
+        <Button text="Register" type="submit" />
 
         {error && (
           <p className="mt-4 text-center text-sm font-medium text-red-500">

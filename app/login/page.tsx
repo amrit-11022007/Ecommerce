@@ -3,6 +3,9 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
+import Input from "../components/Input";
+import Button from "../components/Button";
+
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -46,11 +49,11 @@ export default function LoginPage() {
             <span className="mb-2 block text-sm font-medium text-slate-600">
               Username
             </span>
-            <input
-              className="w-full rounded-2xl border-0 bg-[#e9eef7] px-4 py-3 text-sm text-slate-700 outline-none shadow-[inset_8px_8px_16px_#c9d2e0,inset_-8px_-8px_16px_#ffffff] placeholder:text-slate-400"
-              placeholder="Enter your username"
+            <Input
+              placeholder="Enter Username"
+              type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={setUsername}
             />
           </label>
 
@@ -58,22 +61,16 @@ export default function LoginPage() {
             <span className="mb-2 block text-sm font-medium text-slate-600">
               Password
             </span>
-            <input
+            <Input
+              placeholder="Enter Password"
               type="password"
-              className="w-full rounded-2xl border-0 bg-[#e9eef7] px-4 py-3 text-sm text-slate-700 outline-none shadow-[inset_8px_8px_16px_#c9d2e0,inset_-8px_-8px_16px_#ffffff] placeholder:text-slate-400"
-              placeholder="Enter your password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={setPassword}
             />
           </label>
         </div>
 
-        <button
-          type="submit"
-          className="mt-6 w-full rounded-2xl bg-[#e9eef7] px-4 py-3 text-sm font-semibold text-slate-700 shadow-[8px_8px_16px_#c7d0de,-8px_-8px_16px_#ffffff] transition hover:shadow-[6px_6px_12px_#c7d0de,-6px_-6px_12px_#ffffff] focus:outline-none"
-        >
-          Login
-        </button>
+        <Button text="Login" type="submit" />
 
         {error && (
           <p className="mt-4 text-center text-sm font-medium text-red-500">
