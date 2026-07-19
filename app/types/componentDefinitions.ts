@@ -1,8 +1,13 @@
+import { type LucideIcon } from "lucide-react";
+
 export type ButtonProps = {
-  text: string;
-  type?: "button" | "submit" | "reset";
+  text?: string;
+  type: "button" | "submit" | "reset";
   style?: string;
   onClick?: () => void;
+  icon?: LucideIcon;
+  iconSize?: number;
+  iconClass?: string;
 };
 
 export type InputProps = {
@@ -12,4 +17,5 @@ export type InputProps = {
   value?: string;
   name?: string;
   onChange?: (value: string, field?: string) => void;
+  autofocus?: boolean;
 };
