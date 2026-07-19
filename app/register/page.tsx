@@ -133,6 +133,7 @@ export default function RegisterPage() {
                   [field ?? "mobileNumber"]: value,
                 }))
               }
+              //e.target.value is plugged into value and name is plugged into field
             />
           </label>
         </div>
