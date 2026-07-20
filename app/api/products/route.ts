@@ -11,17 +11,24 @@ export async function GET(request: NextRequest) {
     const offset = Number(params.get("offset")) || 0;
     const category = params.get("category");
     const brand = params.get("brand");
+    const identifier = params.get("identifier");
     const q = params.get("q");
     const sort = params.get("sort");
     let query = "SELECT * FROM Products WHERE 1=1";
     const values: any[] = [];
-    if (category) {
-      query += " AND category = ?";
-      values.push(category);
-    }
-    if (brand) {
-      query += " AND brand = ?";
-      values.push(brand);
+    if (identifier) {
+      query +=
+        " AND (brand LIKE CONCAT('%', ?, '%') OR product_name LIKE CONCAT('%', ?, '%') OR category LIKE CONCAT('%', ?, '%'))";
+      values.push(identifier, identifier, identifier);
+    } else {
+      if (category) {
+        query += " AND category = ?";
+        values.push(category);
+      }
+      if (brand) {
+        query += " AND brand = ?";
+        values.push(brand);
+      }
     }
     if (q) {
       query += " AND product_name LIKE ?";

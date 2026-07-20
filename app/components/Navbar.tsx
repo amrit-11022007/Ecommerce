@@ -5,6 +5,7 @@ import { Search, ShoppingBag, User, X } from "lucide-react";
 import { useState } from "react";
 import Input from "./Input";
 import Button from "./Button";
+import SearchResult from "./SearchResult";
 
 export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -43,37 +44,35 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <div
-            className={`flex h-10 items-center rounded-full bg-[#f5f9fd] shadow-[4px_4px_10px_#d7e0e9,-4px_-4px_10px_#ffffff] transition-all duration-300 ${
-              isSearchOpen ? "w-64 px-4" : "w-10 justify-center"
-            }`}
-          >
-            {isSearchOpen ? (
-              <>
-                <Search size={18} className="shrink-0 text-gray-500" />
-                <Input
-                  autofocus={true}
-                  type="text"
-                  placeholder="Search products..."
-                  style="ml-2 w-full bg-transparent text-sm outline-none"
-                />
+          <div className="relative">
+            <div
+              className={`flex h-10 items-center rounded-full bg-[#f5f9fd] shadow-[4px_4px_10px_#d7e0e9,-4px_-4px_10px_#ffffff] transition-all duration-300 ${
+                isSearchOpen ? "w-64 px-4" : "w-10 justify-center"
+              }`}
+            >
+              {isSearchOpen ? (
+                <>
+                  <Search size={18} className="shrink-0 text-gray-500" />
+                  <SearchResult autoFocus />
+                  <Button
+                    style="shrink-0 text-gray-500 transition hover:text-black"
+                    type="button"
+                    onClick={() => setIsSearchOpen(false)}
+                    icon={X}
+                  />
+                </>
+              ) : (
                 <Button
-                  style="text-gray-500 transition hover:text-black"
                   type="button"
-                  onClick={() => setIsSearchOpen(false)}
-                  icon={X}
+                  onClick={() => setIsSearchOpen(true)}
+                  icon={Search}
+                  iconClass="text-[#4d5966]"
+                  style="text-gray-500"
                 />
-              </>
-            ) : (
-              <Button
-                type="button"
-                onClick={() => setIsSearchOpen(true)}
-                icon={Search}
-                iconClass="text-[#4d5966]"
-                style="text-gray-500"
-              />
-            )}
+              )}
+            </div>
           </div>
+
           <button
             aria-label="Shopping bag"
             className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f5f9fd] shadow-[4px_4px_10px_#d7e0e9,-4px_-4px_10px_#ffffff]"

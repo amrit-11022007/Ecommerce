@@ -1,8 +1,9 @@
-import type { ReactNode } from "react";
+import type { ReactNode, useState } from "react";
 import Image from "next/image";
 import Button from "@/app/components/Button";
 import { placeholderImage } from "@/app/lib/format";
 import { Search } from "lucide-react";
+import SearchResult from "./SearchResult";
 
 type HeroProps = {
   eyebrow: string;
@@ -36,15 +37,6 @@ export function Hero({
           </h1>
 
           <p className="max-w-md text-(--neu-text-muted)">{description}</p>
-
-          <div className="neu-inset flex items-center gap-3 px-5 py-3.5">
-            <Search />
-            <input
-              type="text"
-              placeholder={searchPlaceholder}
-              className="w-full bg-transparent text-sm outline-none placeholder:text-(--neu-text-muted)"
-            />
-          </div>
 
           <Button
             type="button"

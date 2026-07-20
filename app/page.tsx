@@ -1,9 +1,35 @@
+import { Suspense } from "react";
+
 import { ProductGrid } from "./components/ProductGrid";
+import { ProductGridSkeleton } from "./skeletons/ProductGrid";
 import { DisplayProduct, ProductRow } from "./types/definitions";
 import { Hero } from "./components/Hero";
 import { db } from "./lib/database/db";
 
 export default async function Home() {
+  return (
+    <div className="neu-page min-h-screen px-6 py-10 md:px-12 lg:px-20">
+      <Hero
+        eyebrow="New season"
+        title={
+          <>
+            Everyday essentials,{" "}
+            <span className="text-(--neu-accent)">softly</span> made better.
+          </>
+        }
+        description="Footwear, tech, and apparel from brands you trust — curated on one calm, clutter-free shelf."
+        ctaLabel="Browse the shelf"
+        imageText="Neo Store"
+        imageAlt="Featured products preview"
+      />
+      <Suspense fallback={<ProductGridSkeleton />}>
+        <GetProducts />
+      </Suspense>
+    </div>
+  );
+}
+
+async function GetProducts() {
   let featuredProducts: DisplayProduct[] = [];
   try {
     const [rows] = await db.query<ProductRow[]>(
@@ -22,25 +48,10 @@ export default async function Home() {
   }
 
   return (
-    <div className="neu-page min-h-screen px-6 py-10 md:px-12 lg:px-20">
-      <Hero
-        eyebrow="New season"
-        title={
-          <>
-            Everyday essentials,{" "}
-            <span className="text-(--neu-accent)">softly</span> made better.
-          </>
-        }
-        description="Footwear, tech, and apparel from brands you trust — curated on one calm, clutter-free shelf."
-        ctaLabel="Browse the shelf"
-        imageText="Neo Store"
-        imageAlt="Featured products preview"
-      />
-      <ProductGrid
-        eyebrow="Shelf"
-        heading="Featured products"
-        products={featuredProducts}
-      />
-    </div>
+    <ProductGrid
+      eyebrow="Shelf"
+      heading="Featured products"
+      products={featuredProducts}
+    />
   );
 }
