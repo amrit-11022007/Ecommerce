@@ -20,3 +20,8 @@ export interface UserData {
   customerName: string;
   mobileNumber: string;
 }
+
+export interface DisplayProduct extends Product {
+  brand: string;
+  rating: number;
+}
