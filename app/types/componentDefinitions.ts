@@ -1,4 +1,5 @@
 import { type LucideIcon } from "lucide-react";
+import { ReactNode } from "react";
 
 export type ButtonProps = {
   text?: string;
@@ -18,4 +19,14 @@ export type InputProps = {
   name?: string;
   onChange?: (value: string, field?: string) => void;
   autofocus?: boolean;
+};
+
+export type HeroProps = {
+  eyebrow?: string;
+  title: ReactNode;
+  description: string;
+  searchPlaceholder?: string;
+  ctaLabel: string;
+  imageText: string;
+  imageAlt: string;
 };

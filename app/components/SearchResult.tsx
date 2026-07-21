@@ -17,7 +17,6 @@ export default function SearchResult({
   limit = 10,
   emptyMessage = "No results found.",
   className,
-  autoFocus = false,
 }: SearchResultProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ProductRow[]>([]);
@@ -35,7 +34,7 @@ export default function SearchResult({
       setLoading(true);
       try {
         const res = await fetch(
-          `/api/products?q=${encodeURIComponent(trimmed)}&limit=${limit}`,
+          `/api/products?identifier=${encodeURIComponent(trimmed)}&limit=${limit}`,
           { cache: "no-store", signal: controller.signal },
         );
         if (!res.ok) throw new Error("Failed to load data.");
@@ -78,7 +77,7 @@ export default function SearchResult({
               <li className="px-4 py-3 text-sm text-slate-400">Searching…</li>
             ) : displayedResults.length > 0 ? (
               displayedResults.map((product) => (
-                <li key={product.product_id}>
+                <li key={product.product_id} onClick={() => setQuery("")}>
                   <Link
                     href={`/products/${product.product_id}`}
                     className="flex items-center justify-between px-4 py-3 text-sm text-slate-700 transition hover:bg-slate-100"

@@ -25,3 +25,9 @@ export interface DisplayProduct extends Product {
   brand: string;
   rating: number;
 }
+
+export interface ProductPageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}

@@ -2,24 +2,12 @@ import type { ReactNode, useState } from "react";
 import Image from "next/image";
 import Button from "@/app/components/Button";
 import { placeholderImage } from "@/app/lib/format";
-import { Search } from "lucide-react";
-import SearchResult from "./SearchResult";
-
-type HeroProps = {
-  eyebrow: string;
-  title: ReactNode;
-  description: string;
-  searchPlaceholder?: string;
-  ctaLabel: string;
-  imageText: string;
-  imageAlt: string;
-};
+import { HeroProps } from "../types/componentDefinitions";
 
 export function Hero({
   eyebrow,
   title,
   description,
-  searchPlaceholder = "Search for products, brands...",
   ctaLabel,
   imageText,
   imageAlt,
