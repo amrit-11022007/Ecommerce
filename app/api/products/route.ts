@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
 
-import { db } from "@/app/lib/database/db";
-import { ProductRow } from "@/app/types/definitions";
+import { prisma } from "@/app/lib/database/prisma";
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,33 +13,54 @@ export async function GET(request: NextRequest) {
     const identifier = params.get("identifier");
     const q = params.get("q");
     const sort = params.get("sort");
-    let query = "SELECT * FROM Products WHERE 1=1";
-    const values: any[] = [];
+
+    const where: {
+      OR?: Array<{
+        brand?: { contains: string };
+        product_name?: { contains: string };
+        category?: { contains: string };
+      }>;
+      category?: string;
+      brand?: string;
+      product_name?: { contains: string };
+    } = {};
+
     if (identifier) {
-      query +=
-        " AND (brand LIKE CONCAT('%', ?, '%') OR product_name LIKE CONCAT('%', ?, '%') OR category LIKE CONCAT('%', ?, '%'))";
-      values.push(identifier, identifier, identifier);
+      where.OR = [
+        { brand: { contains: identifier } },
+        { product_name: { contains: identifier } },
+        { category: { contains: identifier } },
+      ];
     } else {
       if (category) {
-        query += " AND category = ?";
-        values.push(category);
+        where.category = category;
       }
       if (brand) {
-        query += " AND brand = ?";
-        values.push(brand);
+        where.brand = brand;
       }
     }
+
     if (q) {
-      query += " AND product_name LIKE ?";
-      values.push(`%${q}%`);
+      where.product_name = { contains: q };
     }
-    if (sort === "price_asc") query += " ORDER BY price ASC";
-    if (sort === "price_desc") query += " ORDER BY price DESC";
-    query += " LIMIT ? OFFSET ?";
-    values.push(limit, offset);
-    const [rows] = await db.query<ProductRow[]>(query, values);
+
+    const orderBy =
+      sort === "price_asc"
+        ? { price: "asc" as const }
+        : sort === "price_desc"
+          ? { price: "desc" as const }
+          : undefined;
+
+    const rows = await prisma.products.findMany({
+      where,
+      orderBy,
+      take: limit,
+      skip: offset,
+    });
+
     if (rows.length === 0)
       return NextResponse.json({ message: "No data found" });
+
     return NextResponse.json(rows);
   } catch (error) {
     console.error("Failed to fetch products:", error);

@@ -59,7 +59,6 @@ CREATE TABLE Inventory(
     inventory_id INT PRIMARY KEY AUTO_INCREMENT,
     product_id INT NOT NULL,
     available_count INT NOT NULL,
-    status ENUM('In stock', 'Out of stock') NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 

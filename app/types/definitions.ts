@@ -5,7 +5,13 @@ export interface ProductRow extends RowDataPacket {
   brand: string;
   category: string;
   product_name: string;
+  description: string;
   price: number;
+  available_count: number | null;
+  rating: number | null;
+  review: string | null;
+  comments: string | null;
+  updated_at: string | null;
 }
 
 export interface Product {

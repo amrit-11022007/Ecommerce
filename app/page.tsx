@@ -2,9 +2,9 @@ import { Suspense } from "react";
 
 import { ProductGrid } from "./components/ProductGrid";
 import { ProductGridSkeleton } from "./skeletons/ProductGrid";
-import { DisplayProduct, ProductRow } from "./types/definitions";
+import { DisplayProduct } from "./types/definitions";
 import { Hero } from "./components/Hero";
-import { db } from "./lib/database/db";
+import { prisma } from "./lib/database/prisma";
 
 export default async function Home() {
   return (
@@ -32,10 +32,18 @@ export default async function Home() {
 async function GetProducts() {
   let featuredProducts: DisplayProduct[] = [];
   try {
-    const [rows] = await db.query<ProductRow[]>(
-      "SELECT product_id, product_name, brand, price FROM Products LIMIT 16",
-    );
-    console.log(rows);
+    // const [rows] = await db.query<ProductRow[]>(
+    //   "SELECT product_id, product_name, brand, price FROM Products LIMIT 16",
+    // );
+    const rows = await prisma.products.findMany({
+      select: {
+        product_id: true,
+        product_name: true,
+        brand: true,
+        price: true,
+      },
+      take: 16,
+    });
     featuredProducts = rows.map((row) => ({
       id: row.product_id,
       name: row.product_name,

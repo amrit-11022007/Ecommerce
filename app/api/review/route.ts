@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "../auth/[...nextauth]/route";
-import { db } from "@/app/lib/database/db";
 import { getCustomerId } from "@/app/lib/auth/getCustomerId";
+import { prisma } from "@/app/lib/database/prisma";
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,14 +15,33 @@ export async function GET(request: NextRequest) {
         { status: 400 },
       );
 
-    const [rows] = await db.query(
-      `SELECT r.review_id, r.rating, r.review, r.comments, r.created_at, c.customer_name
-       FROM Reviews r JOIN Customers c ON c.customer_id = r.customer_id
-       WHERE r.product_id = ? ORDER BY r.created_at DESC`,
-      [productId],
-    );
+    const rows = await prisma.reviews.findMany({
+      where: {
+        product_id: Number(productId),
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+      select: {
+        review_id: true,
+        rating: true,
+        review: true,
+        comments: true,
+        created_at: true,
+        Customers: {
+          select: {
+            customer_name: true,
+          },
+        },
+      },
+    });
 
-    return NextResponse.json(rows);
+    return NextResponse.json(
+      rows.map(({ Customers, ...review }) => ({
+        ...review,
+        customer_name: Customers.customer_name,
+      })),
+    );
   } catch (error) {
     console.error("Failed to fetch reviews:", error);
     return NextResponse.json(
@@ -47,15 +66,26 @@ export async function POST(request: NextRequest) {
     }
 
     const customer_id = await getCustomerId(session.user.id);
+    if (!customer_id) {
+      return NextResponse.json(
+        { message: "No customer profile linked" },
+        { status: 400 },
+      );
+    }
 
-    await db.query(
-      "INSERT INTO Reviews (product_id, customer_id, rating, review, comments) VALUES (?, ?, ?, ?, ?)",
-      [product_id, customer_id, rating, review ?? null, comments ?? null],
-    );
+    await prisma.reviews.create({
+      data: {
+        product_id: Number(product_id),
+        customer_id,
+        rating: Number(rating),
+        review: review ?? null,
+        comments: comments ?? null,
+      },
+    });
 
     return NextResponse.json({ message: "Review added" });
   } catch (error: any) {
-    if (error.code === "ER_DUP_ENTRY") {
+    if (error?.code === "P2002") {
       return NextResponse.json(
         { message: "You've already reviewed this product" },
         { status: 409 },
@@ -80,13 +110,21 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ message: "id is required" }, { status: 400 });
 
     const customer_id = await getCustomerId(session.user.id);
+    if (!customer_id) {
+      return NextResponse.json(
+        { message: "No customer profile linked" },
+        { status: 400 },
+      );
+    }
 
-    const [result] = await db.query(
-      "DELETE FROM Reviews WHERE review_id = ? AND customer_id = ?",
-      [id, customer_id],
-    );
+    const result = await prisma.reviews.deleteMany({
+      where: {
+        review_id: Number(id),
+        customer_id,
+      },
+    });
 
-    if ((result as any).affectedRows === 0) {
+    if (result.count === 0) {
       return NextResponse.json(
         { message: "Review not found" },
         { status: 404 },

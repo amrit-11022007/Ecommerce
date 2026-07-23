@@ -1,4 +1,3 @@
-import type { ReactNode, useState } from "react";
 import Image from "next/image";
 import Button from "@/app/components/Button";
 import { placeholderImage } from "@/app/lib/format";

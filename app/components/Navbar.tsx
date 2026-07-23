@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Search, ShoppingBag, User, X } from "lucide-react";
 import { useState } from "react";
-import Input from "./Input";
 import Button from "./Button";
 import SearchResult from "./SearchResult";
 

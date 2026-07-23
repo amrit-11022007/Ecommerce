@@ -3,7 +3,7 @@ import NextAuth, { type AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
-import { db } from "@/app/lib/database/db";
+import { prisma } from "@/app/lib/database/prisma";
 
 export const authOptions: AuthOptions = {
   session: { strategy: "jwt" },
@@ -15,17 +15,25 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const [rows] = await db.query(
-          "SELECT * FROM Users WHERE username = ?",
-          [credentials?.username],
-        );
-        const user = (rows as any[])[0];
+        const username = credentials?.username;
+        const password = credentials?.password;
+
+        if (!username || !password) return null;
+
+        const user = await prisma.users.findUnique({
+          where: { username },
+          select: {
+            user_id: true,
+            username: true,
+            password: true,
+          },
+        });
+
         if (!user) return null;
-        const valid = await bcrypt.compare(
-          credentials!.password,
-          user.password,
-        );
+
+        const valid = await bcrypt.compare(password, user.password);
         if (!valid) return null;
+
         return {
           id: user.user_id.toString(),
           name: user.username,

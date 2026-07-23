@@ -4,8 +4,8 @@ import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { db } from "@/app/lib/database/db";
 import { getCustomerId } from "@/app/lib/auth/getCustomerId";
+import { prisma } from "@/app/lib/database/prisma";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -20,21 +20,37 @@ export async function GET() {
         { status: 400 },
       );
 
-    const [cartRows] = await db.query(
-      "SELECT cart_id FROM Cart WHERE customer_id = ?",
-      [customer_id],
-    );
-    const cart = (cartRows as any[])[0];
+    const cart = await prisma.cart.findFirst({
+      where: { customer_id: Number(customer_id) },
+      select: { cart_id: true },
+    });
+
     if (!cart) return NextResponse.json({ cart_id: null, items: [] });
 
-    const [items] = await db.query(
-      `SELECT ci.cart_item_id, ci.product_id, ci.quantity, ci.price, p.product_name, p.brand
-       FROM CartItems ci JOIN Products p ON p.product_id = ci.product_id
-       WHERE ci.cart_id = ?`,
-      [cart.cart_id],
-    );
+    const items = await prisma.cartItems.findMany({
+      where: { cart_id: cart.cart_id },
+      select: {
+        cart_item_id: true,
+        product_id: true,
+        quantity: true,
+        price: true,
+        Products: {
+          select: {
+            product_name: true,
+            brand: true,
+          },
+        },
+      },
+    });
 
-    return NextResponse.json({ cart_id: cart.cart_id, items });
+    return NextResponse.json({
+      cart_id: cart.cart_id,
+      items: items.map(({ Products, ...item }) => ({
+        ...item,
+        product_name: Products.product_name,
+        brand: Products.brand,
+      })),
+    });
   } catch (error) {
     console.error("Failed to fetch cart:", error);
     return NextResponse.json(
@@ -65,35 +81,48 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
 
-    const [productRows] = await db.query(
-      "SELECT price FROM Products WHERE product_id = ?",
-      [product_id],
-    );
-    const product = (productRows as any[])[0];
+    const product = await prisma.products.findUnique({
+      where: { product_id: Number(product_id) },
+      select: { price: true },
+    });
+
     if (!product)
       return NextResponse.json(
         { message: "Product not found" },
         { status: 404 },
       );
 
-    const [cartRows] = await db.query(
-      "SELECT cart_id FROM Cart WHERE customer_id = ?",
-      [customer_id],
-    );
-    let cart = (cartRows as any[])[0];
-    if (!cart) {
-      const [result] = await db.query(
-        "INSERT INTO Cart (customer_id) VALUES (?)",
-        [customer_id],
-      );
-      cart = { cart_id: (result as any).insertId };
-    }
-    await db.query(
-      `INSERT INTO CartItems (cart_id, product_id, quantity, price)
-       VALUES (?, ?, ?, ?)
-       ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)`,
-      [cart.cart_id, product_id, quantity, product.price],
-    );
+    const cart = await prisma.cart.findFirst({
+      where: { customer_id: Number(customer_id) },
+      select: { cart_id: true },
+    });
+
+    const cart_id =
+      cart?.cart_id ??
+      (
+        await prisma.cart.create({
+          data: { customer_id: Number(customer_id) },
+          select: { cart_id: true },
+        })
+      ).cart_id;
+
+    await prisma.cartItems.upsert({
+      where: {
+        cart_id_product_id: {
+          cart_id,
+          product_id: Number(product_id),
+        },
+      },
+      update: {
+        quantity: { increment: Number(quantity) },
+      },
+      create: {
+        cart_id,
+        product_id: Number(product_id),
+        quantity: Number(quantity),
+        price: product.price,
+      },
+    });
 
     return NextResponse.json({ message: "Added to cart" });
   } catch (error) {
@@ -123,16 +152,25 @@ export async function PATCH(request: NextRequest) {
       );
 
     const customer_id = await getCustomerId(session.user.id);
+    if (!customer_id)
+      return NextResponse.json(
+        { message: "No customer profile linked" },
+        { status: 400 },
+      );
 
-    const [result] = await db.query(
-      `UPDATE CartItems ci
-       JOIN Cart c ON c.cart_id = ci.cart_id
-       SET ci.quantity = ?
-       WHERE ci.cart_item_id = ? AND c.customer_id = ?`,
-      [quantity, id, customer_id],
-    );
+    const result = await prisma.cartItems.updateMany({
+      where: {
+        cart_item_id: Number(id),
+        Cart: {
+          customer_id: Number(customer_id),
+        },
+      },
+      data: {
+        quantity: Number(quantity),
+      },
+    });
 
-    if ((result as any).affectedRows === 0) {
+    if (result.count === 0) {
       return NextResponse.json(
         { message: "Cart item not found" },
         { status: 404 },
@@ -156,15 +194,22 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ message: "id is required" }, { status: 400 });
 
     const customer_id = await getCustomerId(session.user.id);
+    if (!customer_id)
+      return NextResponse.json(
+        { message: "No customer profile linked" },
+        { status: 400 },
+      );
 
-    const [result] = await db.query(
-      `DELETE ci FROM CartItems ci
-       JOIN Cart c ON c.cart_id = ci.cart_id
-       WHERE ci.cart_item_id = ? AND c.customer_id = ?`,
-      [id, customer_id],
-    );
+    const result = await prisma.cartItems.deleteMany({
+      where: {
+        cart_item_id: Number(id),
+        Cart: {
+          customer_id: Number(customer_id),
+        },
+      },
+    });
 
-    if ((result as any).affectedRows === 0) {
+    if (result.count === 0) {
       return NextResponse.json(
         { message: "Cart item not found" },
         { status: 404 },

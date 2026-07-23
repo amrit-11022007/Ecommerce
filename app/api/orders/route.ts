@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "../auth/[...nextauth]/route";
 import { getCustomerId } from "@/app/lib/auth/getCustomerId";
-import { db } from "@/app/lib/database/db";
+import { prisma } from "@/app/lib/database/prisma";
 
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -14,31 +14,63 @@ export async function GET(request: NextRequest) {
   try {
     const customer_id = await getCustomerId(session.user.id);
     const id = request.nextUrl.searchParams.get("id");
+    if (customer_id === null) {
+      return NextResponse.json(
+        { error: "Customer not found" },
+        { status: 404 },
+      );
+    }
 
     if (!id) {
-      const [orders] = await db.query(
-        "SELECT * FROM Orders WHERE customer_id = ? ORDER BY order_date DESC",
-        [customer_id],
-      );
+      const orders = await prisma.orders.findMany({
+        where: {
+          customer_id,
+        },
+        orderBy: {
+          order_date: "desc",
+        },
+      });
       return NextResponse.json(orders);
     }
 
-    const [orderRows] = await db.query(
-      "SELECT * FROM Orders WHERE order_id = ? AND customer_id = ?",
-      [id, customer_id],
-    );
-    const order = (orderRows as any[])[0];
-    if (!order)
+    const order = await prisma.orders.findFirst({
+      where: {
+        order_id: Number(id),
+        customer_id,
+      },
+    });
+
+    if (!order) {
       return NextResponse.json({ message: "Order not found" }, { status: 404 });
+    }
 
-    const [items] = await db.query(
-      `SELECT oi.*, p.product_name FROM OrderItems oi
-       JOIN Products p ON p.product_id = oi.product_id
-       WHERE oi.order_id = ?`,
-      [id],
-    );
+    const items = await prisma.orderItems.findMany({
+      where: {
+        order_id: Number(id),
+      },
+      select: {
+        order_item_id: true,
+        order_id: true,
+        product_id: true,
+        count: true,
+        amount: true,
+        created_at: true,
+        updated_at: true,
+        Products: {
+          select: {
+            product_name: true,
+          },
+        },
+      },
+    });
 
-    return NextResponse.json({ ...order, items });
+    return NextResponse.json({
+      ...order,
+      items: items.map(({ Products, ...item }) => ({
+        ...item,
+        product_name: Products.product_name,
+      })),
+    });
   } catch (error) {
     console.error("Failed to fetch orders:", error);
     return NextResponse.json(
