@@ -1,4 +1,3 @@
-import { Providers } from "./providers";
 import Navbar from "./components/Navbar";
 import "./globals.css";
 
@@ -9,11 +8,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <Providers>
-          <Navbar />
-          {children}
-        </Providers>
+      <body className="bg-slate-950">
+        <Navbar />
+        {children}
       </body>
     </html>
   );

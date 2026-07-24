@@ -1,5 +1,7 @@
-import { PrismaClient } from "../../../generated/prisma";
+import "server-only";
 import "dotenv/config";
+
+import { PrismaClient } from "@prisma/client";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 
 const adapter = new PrismaMariaDb({

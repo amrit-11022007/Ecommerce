@@ -1,10 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import type { DisplayProduct } from "@/app/types/definitions";
 import Button from "@/app/components/Button";
-import { placeholderImage, formatPrice } from "@/app/lib/format";
 import { Plus, Star } from "lucide-react";
 
 type ProductCardProps = {
@@ -17,13 +15,9 @@ export function Card({ product }: ProductCardProps) {
       <article className="group flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-md cursor-pointer transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:shadow-lg hover:shadow-orange-500/5 hover:-translate-y-1">
         <div className="overflow-hidden rounded-xl border border-white/5">
           <div className="relative aspect-square w-full overflow-hidden rounded-xl">
-            <Image
-              src={placeholderImage(product.name)}
-              alt={product.name}
-              fill
-              sizes="(min-width: 1024px) 320px, (min-width: 640px) 45vw, 90vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-110"
-            />
+            <div className="aspect-square bg-slate-800 flex justify-center items-center text-white">
+              {product.name}
+            </div>
           </div>
         </div>
 
@@ -43,9 +37,7 @@ export function Card({ product }: ProductCardProps) {
         </div>
 
         <div className="flex items-center justify-between mt-auto">
-          <span className="text-xl font-bold text-white">
-            {formatPrice(product.price)}
-          </span>
+          <span className="text-xl font-bold text-white">{product.price}</span>
           <Button
             type="button"
             style="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/15 text-orange-400 border border-orange-500/20 transition-all duration-300 hover:bg-orange-500/25 hover:scale-110"

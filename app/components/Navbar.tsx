@@ -5,6 +5,7 @@ import { Search, ShoppingBag, User, X } from "lucide-react";
 import { useState } from "react";
 import Button from "./Button";
 import SearchResult from "./SearchResult";
+import NeoStoreLogo from "./Logo";
 
 export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -13,7 +14,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-slate-950/80 px-6 py-3 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-350 items-center justify-between">
         <Link href="/" className="text-lg font-bold tracking-tight text-white">
-          NEO-STORE
+          <NeoStoreLogo variant="uppercase" size="md" glow={true} />
         </Link>
 
         <div className="flex items-center gap-6">

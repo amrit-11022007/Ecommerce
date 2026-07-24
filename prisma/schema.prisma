@@ -1,10 +1,9 @@
-generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
-}
-
 datasource db {
   provider = "mysql"
+}
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 model Cart {
