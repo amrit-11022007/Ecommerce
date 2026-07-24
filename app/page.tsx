@@ -8,13 +8,13 @@ import { prisma } from "./lib/database/prisma";
 
 export default async function Home() {
   return (
-    <div className="neu-page min-h-screen px-6 py-10 md:px-12 lg:px-20">
+    <div className="min-h-screen bg-slate-950 px-6 py-10 md:px-12 lg:px-20">
       <Hero
         eyebrow="New season"
         title={
           <>
-            Everyday essentials,{" "}
-            <span className="text-(--neu-accent)">softly</span> made better.
+            Everyday essentials, <span className="text-orange-400">softly</span>{" "}
+            made better.
           </>
         }
         description="Footwear, tech, and apparel from brands you trust — curated on one calm, clutter-free shelf."
@@ -32,9 +32,6 @@ export default async function Home() {
 async function GetProducts() {
   let featuredProducts: DisplayProduct[] = [];
   try {
-    // const [rows] = await db.query<ProductRow[]>(
-    //   "SELECT product_id, product_name, brand, price FROM Products LIMIT 16",
-    // );
     const rows = await prisma.products.findMany({
       select: {
         product_id: true,

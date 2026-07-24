@@ -1,5 +1,6 @@
 import { type LucideIcon } from "lucide-react";
 import { ReactNode } from "react";
+import { DisplayProduct } from "./definitions";
 
 export type ButtonProps = {
   text?: string;
@@ -29,4 +30,10 @@ export type HeroProps = {
   ctaLabel: string;
   imageText: string;
   imageAlt: string;
+};
+
+export type ProductGridProps = {
+  eyebrow: string;
+  heading: string;
+  products: DisplayProduct[];
 };

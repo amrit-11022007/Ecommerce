@@ -1,6 +1,8 @@
 import { prisma } from "@/app/lib/database/prisma";
 import { ProductPageProps } from "@/app/types/definitions";
 import { notFound } from "next/navigation";
+import Button from "@/app/components/Button";
+import Input from "@/app/components/Input";
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params;
@@ -56,143 +58,140 @@ export default async function ProductPage({ params }: ProductPageProps) {
     : "Not updated yet";
 
   return (
-    <main className="min-h-screen bg-[#e9eef7] px-6 py-10 text-slate-700 md:px-12 lg:px-20">
+    <main className="min-h-screen bg-slate-950 px-6 py-10 text-slate-300 md:px-12 lg:px-20">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-8 text-sm text-slate-500">
+        <div className="mb-6 text-sm text-slate-500">
           Home <span className="mx-2">/</span> {product.category}
           <span className="mx-2">/</span>
-          <span className="text-slate-700">{product.product_name}</span>
+          <span className="text-slate-300">{product.product_name}</span>
         </div>
 
-        <section className="grid gap-10 rounded-4xl bg-[#e9eef7] p-6 shadow-[12px_12px_24px_#c7d0de,-12px_-12px_24px_#ffffff] md:p-10 lg:grid-cols-2">
-          <div className="flex min-h-105 items-center justify-center rounded-3xl bg-[#e9eef7] shadow-[inset_8px_8px_16px_#c7d0de,inset_-8px_-8px_16px_#ffffff]">
+        <section className="grid gap-8 rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md md:p-8 lg:grid-cols-[400px_1fr]">
+          <div className="flex items-center justify-center rounded-2xl border border-white/5 bg-white/5 p-8">
             <div className="text-center">
               <div className="mb-4 text-8xl">🛍️</div>
-              <p className="text-sm font-medium uppercase tracking-widest text-slate-400">
+              <p className="text-sm font-medium uppercase tracking-widest text-orange-400/80">
                 {product.brand}
               </p>
             </div>
           </div>
-
           <div className="flex flex-col justify-center">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-(--neu-accent)">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-orange-400">
               {product.category}
             </p>
-            <h1 className="text-4xl font-bold tracking-tight text-slate-800 md:text-5xl">
+            <h1 className="text-2xl font-bold text-white md:text-3xl">
               {product.product_name}
             </h1>
-            <p className="mt-4 text-lg text-slate-500">
-              <span className="font-semibold text-slate-700">
+            <p className="mt-1 text-sm text-slate-400">
+              by{" "}
+              <span className="font-semibold text-slate-300">
                 {product.brand}
               </span>
             </p>
-            <div className="mt-8">
-              <span className="text-4xl font-bold text-slate-800">
+            <div className="mt-3 flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 rounded-md bg-green-500/15 px-2.5 py-1 text-sm font-semibold text-green-400 border border-green-500/20">
+                {ratingValue} ★
+              </span>
+              <span className="text-sm text-slate-500">({reviewText})</span>
+            </div>
+            <div className="mt-6">
+              <span className="text-3xl font-bold text-white">
                 ₹{Number(product.price).toLocaleString("en-IN")}
               </span>
             </div>
-            <div className="my-8 h-px bg-slate-300/60" />
-            <div className="mb-8 flex items-center justify-between rounded-2xl bg-[#e9eef7] px-5 py-4 shadow-[inset_5px_5px_10px_#c7d0de,inset_-5px_-5px_10px_#ffffff]">
-              <span className="font-mono text-sm font-semibold text-slate-700">
-                {product.description}
-              </span>
-            </div>
-            <div className="flex flex-col gap-4 sm:flex-row">
-              <button className="flex-1 rounded-2xl bg-[#e9eef7] px-6 py-4 font-semibold text-slate-700 shadow-[8px_8px_16px_#c7d0de,-8px_-8px_16px_#ffffff] transition hover:shadow-[4px_4px_8px_#c7d0de,-4px_-4px_8px_#ffffff] active:shadow-[inset_4px_4px_8px_#c7d0de,inset_-4px_-4px_8px_#ffffff]">
-                Add to Cart
-              </button>
-              <button className="flex-1 rounded-2xl bg-[#E0C313] px-6 py-4 font-semibold text-white shadow-[8px_8px_16px_#c7d0de,-8px_-8px_16px_#ffffff] transition hover:brightness-105 active:shadow-[inset_4px_4px_8px_rgba(0,0,0,0.2)]">
-                Buy Now
-              </button>
+            <div className="my-6 h-px bg-white/10" />
+            <p className="text-sm leading-relaxed text-slate-400">
+              {product.description}
+            </p>
+            <div className="mt-8 flex gap-4">
+              <Button
+                text="Add to Cart"
+                type="button"
+                style="flex-1 rounded-xl border border-orange-500/30 bg-orange-500/10 px-6 py-3.5 font-semibold text-orange-400 backdrop-blur-sm transition-all duration-300 hover:bg-orange-500/20 hover:border-orange-500/50 hover:shadow-lg hover:shadow-orange-500/10 active:scale-[0.98]"
+              />
+              <Button
+                text="Buy Now"
+                type="button"
+                style="flex-1 rounded-xl bg-orange-500 px-6 py-3.5 font-semibold text-white transition-all duration-300 hover:bg-orange-400 hover:shadow-lg hover:shadow-orange-500/25 active:scale-[0.98]"
+              />
             </div>
           </div>
         </section>
-
-        <section className="mt-8 grid gap-6 lg:grid-cols-2">
-          <div className="rounded-3xl bg-[#e9eef7] p-6 shadow-[12px_12px_24px_#c7d0de,-12px_-12px_24px_#ffffff]">
-            <h2 className="mb-4 text-xl font-semibold text-slate-800">
+        <section className="mt-8 grid gap-8 lg:grid-cols-2">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md md:p-8">
+            <h2 className="mb-6 text-lg font-semibold text-white">
               Product Details
             </h2>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl bg-[#e9eef7] p-4 shadow-[inset_5px_5px_10px_#c7d0de,inset_-5px_-5px_10px_#ffffff]">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                  Brand
-                </p>
-                <p className="mt-1 font-semibold text-slate-700">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                <span className="text-sm text-orange-400/70">Brand</span>
+                <span className="text-sm font-medium text-white">
                   {product.brand}
-                </p>
+                </span>
               </div>
-              <div className="rounded-2xl bg-[#e9eef7] p-4 shadow-[inset_5px_5px_10px_#c7d0de,inset_-5px_-5px_10px_#ffffff]">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                  Category
-                </p>
-                <p className="mt-1 font-semibold text-slate-700">
+              <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                <span className="text-sm text-orange-400/70">Category</span>
+                <span className="text-sm font-medium text-white">
                   {product.category}
-                </p>
+                </span>
               </div>
-              <div className="rounded-2xl bg-[#e9eef7] p-4 shadow-[inset_5px_5px_10px_#c7d0de,inset_-5px_-5px_10px_#ffffff]">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                  Product Name
-                </p>
-                <p className="mt-1 font-semibold text-slate-700">
+              <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                <span className="text-sm text-orange-400/70">Product Name</span>
+                <span className="text-sm font-medium text-white">
                   {product.product_name}
-                </p>
+                </span>
               </div>
-              <div className="rounded-2xl bg-[#e9eef7] p-4 shadow-[inset_5px_5px_10px_#c7d0de,inset_-5px_-5px_10px_#ffffff]">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                  Price
-                </p>
-                <p className="mt-1 font-semibold text-slate-700">
+              <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                <span className="text-sm text-orange-400/70">Price</span>
+                <span className="text-sm font-medium text-white">
                   ₹{Number(product.price).toLocaleString("en-IN")}
-                </p>
+                </span>
               </div>
-              <div className="rounded-2xl bg-[#e9eef7] p-4 shadow-[inset_5px_5px_10px_#c7d0de,inset_-5px_-5px_10px_#ffffff]">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                  Availability
-                </p>
-                <p className="mt-1 font-semibold text-slate-700">
+              <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                <span className="text-sm text-green-400/70">Availability</span>
+                <span className="text-sm font-medium text-green-400">
                   {stockCount} in stock
-                </p>
+                </span>
               </div>
-              <div className="rounded-2xl bg-[#e9eef7] p-4 shadow-[inset_5px_5px_10px_#c7d0de,inset_-5px_-5px_10px_#ffffff]">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                  Updated At
-                </p>
-                <p className="mt-1 font-semibold text-slate-700">
+              <div className="flex items-center justify-between pb-3">
+                <span className="text-sm text-orange-400/70">Updated At</span>
+                <span className="text-sm font-medium text-white">
                   {updatedAtText}
-                </p>
+                </span>
               </div>
             </div>
           </div>
-
-          <div className="rounded-3xl bg-[#e9eef7] p-6 shadow-[12px_12px_24px_#c7d0de,-12px_-12px_24px_#ffffff]">
-            <h2 className="mb-4 text-xl font-semibold text-slate-800">
-              Review Details
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md md:p-8">
+            <h2 className="mb-6 text-lg font-semibold text-white">
+              Reviews & Ratings
             </h2>
-            <div className="space-y-4">
-              <div className="rounded-2xl bg-[#e9eef7] p-4 shadow-[inset_5px_5px_10px_#c7d0de,inset_-5px_-5px_10px_#ffffff]">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                  Rating
-                </p>
-                <p className="mt-1 font-semibold text-slate-700">
-                  {ratingValue}
-                </p>
+            <div className="space-y-4 mb-8">
+              <div className="rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="inline-flex items-center gap-1 rounded-md bg-green-500/15 px-2 py-0.5 text-xs font-semibold text-green-400 border border-green-500/20">
+                    {ratingValue} ★
+                  </span>
+                  <span className="text-sm text-slate-500">{reviewText}</span>
+                </div>
+                <p className="text-sm text-slate-400">{commentsText}</p>
               </div>
-              <div className="rounded-2xl bg-[#e9eef7] p-4 shadow-[inset_5px_5px_10px_#c7d0de,inset_-5px_-5px_10px_#ffffff]">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                  Review
-                </p>
-                <p className="mt-1 font-semibold text-slate-700">
-                  {reviewText}
-                </p>
-              </div>
-              <div className="rounded-2xl bg-[#e9eef7] p-4 shadow-[inset_5px_5px_10px_#c7d0de,inset_-5px_-5px_10px_#ffffff]">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                  Comments
-                </p>
-                <p className="mt-1 font-semibold text-slate-700">
-                  {commentsText}
-                </p>
+            </div>
+            <div className="border-t border-white/10 pt-6">
+              <h3 className="mb-4 text-sm font-semibold text-white">
+                Add a Review
+              </h3>
+              <div className="space-y-4">
+                <Input
+                  placeholder="Write your review..."
+                  type="text"
+                  name="review"
+                  style="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none backdrop-blur-sm transition-all duration-300 focus:border-orange-500/50 focus:bg-white/10 focus:shadow-lg focus:shadow-orange-500/5"
+                />
+                <Button
+                  text="Submit Review"
+                  type="button"
+                  style="w-full rounded-xl bg-orange-500/15 border border-orange-500/20 px-4 py-3 text-sm font-semibold text-orange-400 backdrop-blur-sm transition-all duration-300 hover:bg-orange-500/25 hover:border-orange-500/40 hover:shadow-lg hover:shadow-orange-500/10 active:scale-[0.98]"
+                />
               </div>
             </div>
           </div>

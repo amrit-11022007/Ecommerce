@@ -62,35 +62,35 @@ export default function SearchResult({
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search for products, brands..."
-        className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
+        className="w-full bg-transparent text-sm text-white outline-none placeholder:text-slate-500"
       />
 
       {isOpen && (
         <div
           className={clsx(
-            "absolute left-0 top-full z-20 mt-2 w-full overflow-hidden rounded-2xl border border-slate-200 bg-white/95 shadow-[0_12px_30px_rgba(15,23,42,0.12)] backdrop-blur",
+            "absolute left-0 top-full z-20 mt-2 w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-900/95 shadow-[0_12px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl",
             className,
           )}
         >
           <ul className="max-h-72 overflow-y-auto">
             {loading ? (
-              <li className="px-4 py-3 text-sm text-slate-400">Searching…</li>
+              <li className="px-4 py-3 text-sm text-slate-500">Searching…</li>
             ) : displayedResults.length > 0 ? (
               displayedResults.map((product) => (
                 <li key={product.product_id} onClick={() => setQuery("")}>
                   <Link
                     href={`/products/${product.product_id}`}
-                    className="flex items-center justify-between px-4 py-3 text-sm text-slate-700 transition hover:bg-slate-100"
+                    className="flex items-center justify-between px-4 py-3 text-sm text-slate-300 transition hover:bg-white/5"
                   >
                     <span className="truncate">{product.product_name}</span>
-                    <span className="ml-3 shrink-0 text-xs text-slate-400">
+                    <span className="ml-3 shrink-0 text-xs text-slate-500">
                       {product.brand}
                     </span>
                   </Link>
                 </li>
               ))
             ) : (
-              <li className="cursor-default px-4 py-3 text-sm text-slate-400">
+              <li className="cursor-default px-4 py-3 text-sm text-slate-500">
                 {emptyMessage}
               </li>
             )}

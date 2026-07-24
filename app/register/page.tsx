@@ -49,23 +49,23 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#e9eef7] px-4 py-8 text-slate-700">
+    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-8">
       <form
         onSubmit={handleRegister}
-        className="w-full max-w-md rounded-4xl border border-white/70 bg-[#e9eef7] p-8 shadow-[20px_20px_60px_#c7d0de,-20px_-20px_60px_#ffffff]"
+        className="w-full max-w-md rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-md"
       >
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-700">
+          <h1 className="text-3xl font-semibold tracking-tight text-white">
             Create account
           </h1>
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-slate-400">
             Register with your details below
           </p>
         </div>
 
         <div className="space-y-4">
           <label className="block">
-            <span className="mb-2 block text-sm font-medium text-slate-600">
+            <span className="mb-2 block text-sm font-medium text-slate-400">
               Username
             </span>
             <Input
@@ -83,7 +83,7 @@ export default function RegisterPage() {
           </label>
 
           <label className="block">
-            <span className="mb-2 block text-sm font-medium text-slate-600">
+            <span className="mb-2 block text-sm font-medium text-slate-400">
               Password
             </span>
             <Input
@@ -101,7 +101,7 @@ export default function RegisterPage() {
           </label>
 
           <label className="block">
-            <span className="mb-2 block text-sm font-medium text-slate-600">
+            <span className="mb-2 block text-sm font-medium text-slate-400">
               Customer Name
             </span>
             <Input
@@ -119,7 +119,7 @@ export default function RegisterPage() {
           </label>
 
           <label className="block">
-            <span className="mb-2 block text-sm font-medium text-slate-600">
+            <span className="mb-2 block text-sm font-medium text-slate-400">
               Mobile Number
             </span>
             <Input
@@ -133,7 +133,6 @@ export default function RegisterPage() {
                   [field ?? "mobileNumber"]: value,
                 }))
               }
-              //e.target.value is plugged into value and name is plugged into field
             />
           </label>
         </div>
@@ -141,7 +140,7 @@ export default function RegisterPage() {
         <Button text="Register" type="submit" />
 
         {error && (
-          <p className="mt-4 text-center text-sm font-medium text-red-500">
+          <p className="mt-4 text-center text-sm font-medium text-red-400">
             {error}
           </p>
         )}

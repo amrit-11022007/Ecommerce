@@ -12,7 +12,7 @@ export default function Button({
   iconClass,
 }: ButtonProps) {
   const defaultStyle =
-    "mt-6 w-full rounded-2xl bg-[#e9eef7] px-4 py-3 text-sm font-semibold text-slate-700 shadow-[8px_8px_16px_#c7d0de,-8px_-8px_16px_#ffffff] transition hover:shadow-[6px_6px_12px_#c7d0de,-6px_-6px_12px_#ffffff] focus:outline-none";
+    "w-full rounded-xl border border-orange-500/20 bg-orange-500/10 px-4 py-3 text-sm font-semibold text-orange-400 backdrop-blur-sm transition-all duration-300 hover:bg-orange-500/20 hover:border-orange-500/40 hover:shadow-lg hover:shadow-orange-500/10 active:scale-[0.98] focus:outline-none";
   return (
     <button
       type={type}

@@ -1,3 +1,5 @@
+"use client";
+
 import clsx from "clsx";
 
 import { InputProps } from "../types/componentDefinitions";
@@ -11,7 +13,7 @@ export default function Input({
   onChange,
 }: InputProps) {
   const defaultStyle =
-    "w-full rounded-2xl border-0 bg-[#e9eef7] px-4 py-3 text-sm text-slate-700 outline-none shadow-[inset_8px_8px_16px_#c9d2e0,inset_-8px_-8px_16px_#ffffff] placeholder:text-slate-400";
+    "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none backdrop-blur-sm transition-all duration-300 focus:border-orange-500/50 focus:bg-white/10 focus:shadow-lg focus:shadow-orange-500/5";
   return (
     <input
       placeholder={placeholder}
