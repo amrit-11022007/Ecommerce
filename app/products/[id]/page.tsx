@@ -3,6 +3,17 @@ import { ProductPageProps } from "@/app/types/definitions";
 import { notFound } from "next/navigation";
 import Button from "@/app/components/Button";
 import Input from "@/app/components/Input";
+import {
+  Star,
+  ShoppingBag,
+  Truck,
+  Shield,
+  RotateCcw,
+  Heart,
+  Share2,
+  Minus,
+  Plus,
+} from "lucide-react";
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params;
@@ -49,7 +60,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     : "No review available";
   const commentsText = latestReview?.comments?.trim()
     ? latestReview.comments
-    : "NO COMMENTS TO DISPLAY";
+    : "No comments to display";
   const updatedAtText = latestReview?.updated_at
     ? new Date(latestReview.updated_at).toLocaleString("en-IN", {
         dateStyle: "medium",
@@ -58,139 +69,261 @@ export default async function ProductPage({ params }: ProductPageProps) {
     : "Not updated yet";
 
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-10 text-slate-300 md:px-12 lg:px-20">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-6 text-sm text-slate-500">
-          Home <span className="mx-2">/</span> {product.category}
-          <span className="mx-2">/</span>
-          <span className="text-slate-300">{product.product_name}</span>
+    <main className="min-h-screen bg-linear-to-b from-[#F0F8FF]/30 via-white to-white">
+      <div className="container-premium py-8 md:py-12">
+        <div className="mb-8 flex items-center gap-2 text-sm font-medium text-gray-400">
+          <span className="hover:text-[#6C63FF] transition-colors duration-300 cursor-pointer">
+            Home
+          </span>
+          <span>/</span>
+          <span className="hover:text-[#6C63FF] transition-colors duration-300 cursor-pointer">
+            {product.category}
+          </span>
+          <span>/</span>
+          <span className="text-[#2D3436]">{product.product_name}</span>
         </div>
 
-        <section className="grid gap-8 rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md md:p-8 lg:grid-cols-[400px_1fr]">
-          <div className="flex items-center justify-center rounded-2xl border border-white/5 bg-white/5 p-8">
-            <div className="text-center">
-              <div className="mb-4 text-8xl">🛍️</div>
-              <p className="text-sm font-medium uppercase tracking-widest text-orange-400/80">
-                {product.brand}
-              </p>
+        <section className="grid gap-8 lg:grid-cols-[1fr_1fr]">
+          <div className="relative overflow-hidden rounded-[3rem] bg-linear-to-br from-[#F0F8FF] to-[#F8F0FF] border border-gray-100 p-12 shadow-2xl shadow-[#6C63FF]/5 group">
+            <div className="absolute top-6 right-6 z-10 flex gap-2">
+              <button className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-300 hover:bg-white hover:shadow-md hover:scale-110">
+                <Heart
+                  size={20}
+                  className="text-gray-400 hover:text-red-400 transition-colors duration-300"
+                />
+              </button>
+              <button className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-300 hover:bg-white hover:shadow-md hover:scale-110">
+                <Share2
+                  size={20}
+                  className="text-gray-400 hover:text-[#6C63FF] transition-colors duration-300"
+                />
+              </button>
+            </div>
+            <div className="flex items-center justify-center transition-transform duration-700 group-hover:scale-110 group-hover:rotate-3">
+              <div className="text-center">
+                <div className="mb-6 text-[120px]">🛍️</div>
+                <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#6C63FF] bg-white/60 backdrop-blur-sm rounded-full px-6 py-3 inline-block">
+                  {product.brand}
+                </p>
+              </div>
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 flex gap-2 p-6">
+              <div className="w-20 h-20 rounded-2xl bg-white border-2 border-[#6C63FF] p-2 flex items-center justify-center cursor-pointer shadow-lg">
+                <div className="text-2xl">🛍️</div>
+              </div>
+              <div className="w-20 h-20 rounded-2xl bg-white border border-gray-200 p-2 flex items-center justify-center cursor-pointer hover:border-[#6C63FF]/50 transition-all duration-300">
+                <div className="text-2xl">📦</div>
+              </div>
+              <div className="w-20 h-20 rounded-2xl bg-white border border-gray-200 p-2 flex items-center justify-center cursor-pointer hover:border-[#6C63FF]/50 transition-all duration-300">
+                <div className="text-2xl">✨</div>
+              </div>
             </div>
           </div>
+
           <div className="flex flex-col justify-center">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-orange-400">
-              {product.category}
-            </p>
-            <h1 className="text-2xl font-bold text-white md:text-3xl">
+            <div className="inline-flex items-center gap-2 rounded-full bg-linear-to-r from-[#2874F0]/10 to-[#6C63FF]/10 backdrop-blur-sm border border-[#6C63FF]/20 px-4 py-2 w-fit mb-4">
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#6C63FF]">
+                {product.category}
+              </span>
+            </div>
+
+            <h1 className="text-4xl font-bold text-[#2D3436] md:text-5xl tracking-tight leading-tight">
               {product.product_name}
             </h1>
-            <p className="mt-1 text-sm text-slate-400">
+
+            <p className="mt-3 text-lg text-gray-500 font-medium">
               by{" "}
-              <span className="font-semibold text-slate-300">
+              <span className="font-semibold text-[#2874F0]">
                 {product.brand}
               </span>
             </p>
-            <div className="mt-3 flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 rounded-md bg-green-500/15 px-2.5 py-1 text-sm font-semibold text-green-400 border border-green-500/20">
-                {ratingValue} ★
+
+            <div className="mt-5 flex items-center gap-4">
+              <div className="flex items-center gap-1.5 rounded-full bg-linear-to-r from-[#FF9F43]/10 to-[#FF9F43]/5 px-4 py-2">
+                <Star size={16} className="fill-[#FF9F43] text-[#FF9F43]" />
+                <span className="text-sm font-bold text-[#FF9F43]">
+                  {ratingValue}
+                </span>
+              </div>
+              <span className="text-sm font-medium text-gray-400">
+                {reviewText}
               </span>
-              <span className="text-sm text-slate-500">({reviewText})</span>
             </div>
-            <div className="mt-6">
-              <span className="text-3xl font-bold text-white">
+
+            <div className="mt-8 flex items-baseline gap-3">
+              <span className="text-5xl font-bold text-[#2D3436] tracking-tight">
                 ₹{Number(product.price).toLocaleString("en-IN")}
               </span>
+              <span className="text-lg text-gray-400 line-through font-medium">
+                ₹
+                {Math.round(Number(product.price) * 1.4).toLocaleString(
+                  "en-IN",
+                )}
+              </span>
+              <span className="text-sm font-bold text-green-500 bg-green-50 px-3 py-1 rounded-full">
+                30% off
+              </span>
             </div>
-            <div className="my-6 h-px bg-white/10" />
-            <p className="text-sm leading-relaxed text-slate-400">
+
+            <div className="my-8 h-px bg-linear-to-r from-gray-200 via-gray-300 to-gray-200" />
+
+            <p className="text-base leading-relaxed text-gray-500 font-medium">
               {product.description}
             </p>
-            <div className="mt-8 flex gap-4">
+
+            <div className="mt-8 flex items-center gap-4">
+              <div className="flex items-center gap-3 rounded-2xl border-2 border-gray-200 p-2">
+                <button className="flex h-10 w-10 items-center justify-center rounded-xl hover:bg-gray-100 transition-colors duration-300">
+                  <Minus size={20} className="text-gray-600" />
+                </button>
+                <span className="text-lg font-bold text-[#2D3436] min-w-8 text-center">
+                  1
+                </span>
+                <button className="flex h-10 w-10 items-center justify-center rounded-xl hover:bg-gray-100 transition-colors duration-300">
+                  <Plus size={20} className="text-gray-600" />
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-4">
               <Button
                 text="Add to Cart"
                 type="button"
-                style="flex-1 rounded-xl border border-orange-500/30 bg-orange-500/10 px-6 py-3.5 font-semibold text-orange-400 backdrop-blur-sm transition-all duration-300 hover:bg-orange-500/20 hover:border-orange-500/50 hover:shadow-lg hover:shadow-orange-500/10 active:scale-[0.98]"
+                variant="primary"
+                size="lg"
+                icon={ShoppingBag}
+                className="rounded-2xl shadow-xl shadow-[#6C63FF]/30 hover:shadow-2xl hover:shadow-[#6C63FF]/40 flex-1"
               />
               <Button
                 text="Buy Now"
                 type="button"
-                style="flex-1 rounded-xl bg-orange-500 px-6 py-3.5 font-semibold text-white transition-all duration-300 hover:bg-orange-400 hover:shadow-lg hover:shadow-orange-500/25 active:scale-[0.98]"
+                variant="outline"
+                size="lg"
+                className="rounded-2xl flex-1"
               />
+            </div>
+
+            <div className="mt-8 grid grid-cols-3 gap-4">
+              <div className="flex flex-col items-center gap-2 rounded-2xl bg-[#F0F8FF] p-4">
+                <Truck size={22} className="text-[#2874F0]" />
+                <span className="text-xs font-semibold text-gray-600 text-center">
+                  Free Shipping
+                </span>
+              </div>
+              <div className="flex flex-col items-center gap-2 rounded-2xl bg-[#FFF5E7] p-4">
+                <Shield size={22} className="text-[#FF9F43]" />
+                <span className="text-xs font-semibold text-gray-600 text-center">
+                  Secure Pay
+                </span>
+              </div>
+              <div className="flex flex-col items-center gap-2 rounded-2xl bg-[#F0FFF4] p-4">
+                <RotateCcw size={22} className="text-green-500" />
+                <span className="text-xs font-semibold text-gray-600 text-center">
+                  Easy Return
+                </span>
+              </div>
             </div>
           </div>
         </section>
-        <section className="mt-8 grid gap-8 lg:grid-cols-2">
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md md:p-8">
-            <h2 className="mb-6 text-lg font-semibold text-white">
+
+        <section className="mt-12 grid gap-8 lg:grid-cols-2">
+          <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 shadow-xl shadow-[#6C63FF]/5">
+            <h2 className="mb-8 text-2xl font-bold text-[#2D3436] flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-[#2874F0]/10 to-[#6C63FF]/10 flex items-center justify-center">
+                <ShoppingBag size={20} className="text-[#6C63FF]" />
+              </div>
               Product Details
             </h2>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                <span className="text-sm text-orange-400/70">Brand</span>
-                <span className="text-sm font-medium text-white">
+            <div className="space-y-5">
+              <div className="flex items-center justify-between py-4 border-b border-gray-50">
+                <span className="text-sm font-medium text-gray-500">Brand</span>
+                <span className="text-sm font-bold text-[#2D3436]">
                   {product.brand}
                 </span>
               </div>
-              <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                <span className="text-sm text-orange-400/70">Category</span>
-                <span className="text-sm font-medium text-white">
+              <div className="flex items-center justify-between py-4 border-b border-gray-50">
+                <span className="text-sm font-medium text-gray-500">
+                  Category
+                </span>
+                <span className="text-sm font-bold text-[#2D3436]">
                   {product.category}
                 </span>
               </div>
-              <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                <span className="text-sm text-orange-400/70">Product Name</span>
-                <span className="text-sm font-medium text-white">
+              <div className="flex items-center justify-between py-4 border-b border-gray-50">
+                <span className="text-sm font-medium text-gray-500">
+                  Product Name
+                </span>
+                <span className="text-sm font-bold text-[#2D3436]">
                   {product.product_name}
                 </span>
               </div>
-              <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                <span className="text-sm text-orange-400/70">Price</span>
-                <span className="text-sm font-medium text-white">
+              <div className="flex items-center justify-between py-4 border-b border-gray-50">
+                <span className="text-sm font-medium text-gray-500">Price</span>
+                <span className="text-sm font-bold text-[#2D3436]">
                   ₹{Number(product.price).toLocaleString("en-IN")}
                 </span>
               </div>
-              <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                <span className="text-sm text-green-400/70">Availability</span>
-                <span className="text-sm font-medium text-green-400">
+              <div className="flex items-center justify-between py-4 border-b border-gray-50">
+                <span className="text-sm font-medium text-gray-500">
+                  Availability
+                </span>
+                <span className="inline-flex items-center gap-2 text-sm font-bold text-green-500 bg-green-50 px-4 py-2 rounded-full">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                   {stockCount} in stock
                 </span>
               </div>
-              <div className="flex items-center justify-between pb-3">
-                <span className="text-sm text-orange-400/70">Updated At</span>
-                <span className="text-sm font-medium text-white">
+              <div className="flex items-center justify-between py-4">
+                <span className="text-sm font-medium text-gray-500">
+                  Updated At
+                </span>
+                <span className="text-sm font-bold text-[#2D3436]">
                   {updatedAtText}
                 </span>
               </div>
             </div>
           </div>
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md md:p-8">
-            <h2 className="mb-6 text-lg font-semibold text-white">
+
+          <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 shadow-xl shadow-[#6C63FF]/5">
+            <h2 className="mb-8 text-2xl font-bold text-[#2D3436] flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-[#FF9F43]/10 to-[#FF6B6B]/10 flex items-center justify-center">
+                <Star size={20} className="text-[#FF9F43]" />
+              </div>
               Reviews & Ratings
             </h2>
-            <div className="space-y-4 mb-8">
-              <div className="rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-sm">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="inline-flex items-center gap-1 rounded-md bg-green-500/15 px-2 py-0.5 text-xs font-semibold text-green-400 border border-green-500/20">
-                    {ratingValue} ★
+            <div className="space-y-6 mb-8">
+              <div className="rounded-2xl bg-linear-to-br from-[#F0F8FF] to-[#F8F0FF] p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="flex items-center gap-1.5 rounded-full bg-white px-4 py-2 shadow-sm">
+                    <Star size={14} className="fill-[#FF9F43] text-[#FF9F43]" />
+                    <span className="text-sm font-bold text-[#2D3436]">
+                      {ratingValue}
+                    </span>
+                  </div>
+                  <span className="text-sm font-medium text-gray-500">
+                    {reviewText}
                   </span>
-                  <span className="text-sm text-slate-500">{reviewText}</span>
                 </div>
-                <p className="text-sm text-slate-400">{commentsText}</p>
+                <p className="text-sm text-gray-600 font-medium leading-relaxed">
+                  {commentsText}
+                </p>
               </div>
             </div>
-            <div className="border-t border-white/10 pt-6">
-              <h3 className="mb-4 text-sm font-semibold text-white">
+
+            <div className="border-t border-gray-100 pt-8">
+              <h3 className="mb-5 text-lg font-bold text-[#2D3436]">
                 Add a Review
               </h3>
               <div className="space-y-4">
                 <Input
-                  placeholder="Write your review..."
+                  placeholder="Share your experience..."
                   type="text"
                   name="review"
-                  style="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none backdrop-blur-sm transition-all duration-300 focus:border-orange-500/50 focus:bg-white/10 focus:shadow-lg focus:shadow-orange-500/5"
                 />
                 <Button
                   text="Submit Review"
                   type="button"
-                  style="w-full rounded-xl bg-orange-500/15 border border-orange-500/20 px-4 py-3 text-sm font-semibold text-orange-400 backdrop-blur-sm transition-all duration-300 hover:bg-orange-500/25 hover:border-orange-500/40 hover:shadow-lg hover:shadow-orange-500/10 active:scale-[0.98]"
+                  variant="primary"
+                  className="rounded-2xl"
                 />
               </div>
             </div>

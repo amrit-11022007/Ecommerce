@@ -1,26 +1,30 @@
-import { type LucideIcon } from "lucide-react";
-import { ReactNode } from "react";
+import { ReactNode, MouseEvent } from "react";
 import { DisplayProduct } from "./definitions";
 
-export type ButtonProps = {
-  text?: string;
-  type: "button" | "submit" | "reset";
-  style?: string;
-  onClick?: () => void;
-  icon?: LucideIcon;
+export interface ButtonProps {
+  text: string;
+  type?: "button" | "submit" | "reset";
+  variant?: "primary" | "secondary" | "ghost" | "outline" | "danger";
+  size?: "sm" | "default" | "lg" | "xl";
+  onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+  icon?: React.ComponentType<{ size?: number; className?: string }>;
   iconSize?: number;
   iconClass?: string;
-};
+  className?: string;
+  disabled?: boolean;
+  fullWidth?: boolean;
+}
 
-export type InputProps = {
-  placeholder: string;
-  type?: React.HTMLInputTypeAttribute;
+export interface InputProps {
+  placeholder?: string;
+  type?: "text" | "email" | "password" | "number" | "tel" | "url" | "search";
   style?: string;
-  value?: string;
+  value?: string | number;
   name?: string;
-  onChange?: (value: string, field?: string) => void;
-  autofocus?: boolean;
-};
+  onChange?: (value: string, name?: string) => void;
+  required?: boolean;
+  disabled?: boolean;
+}
 
 export type HeroProps = {
   eyebrow?: string;

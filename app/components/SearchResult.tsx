@@ -1,32 +1,42 @@
 "use client";
 
-import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import type { ProductRow } from "@/app/types/definitions";
-import { useDebounce } from "@/app/utility/deBounce";
+import { Search, Sparkles, ArrowRight } from "lucide-react";
 
 type SearchResultProps = {
+  query: string;
   limit?: number;
   emptyMessage?: string;
   className?: string;
-  autoFocus?: boolean;
+  onClose?: () => void;
 };
 
 export default function SearchResult({
+  query,
   limit = 10,
   emptyMessage = "No results found.",
   className,
+  onClose,
 }: SearchResultProps) {
-  const [query, setQuery] = useState("");
   const [results, setResults] = useState<ProductRow[]>([]);
   const [loading, setLoading] = useState(false);
+  const prevQuery = useRef(query);
 
-  const debouncedQuery = useDebounce(query, 400);
-  const trimmed = debouncedQuery.trim();
+  const trimmed = query.trim();
 
   useEffect(() => {
-    if (trimmed === "") return;
+    if (trimmed === "") {
+      if (prevQuery.current !== "") {
+        setResults([]);
+        prevQuery.current = "";
+      }
+      return;
+    }
+
+    if (trimmed === prevQuery.current) return;
+    prevQuery.current = trimmed;
 
     const controller = new AbortController();
 
@@ -52,51 +62,67 @@ export default function SearchResult({
     return () => controller.abort();
   }, [trimmed, limit]);
 
-  const isOpen = query.trim().length > 0;
-  const displayedResults = trimmed === "" ? [] : results;
+  if (trimmed === "") return null;
 
   return (
-    <div className="relative min-w-0 flex-1">
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search for products, brands..."
-        className="w-full bg-transparent text-sm text-white outline-none placeholder:text-slate-500"
-      />
+    <div className={className}>
+      <div className="px-5 py-3 border-b border-gray-50">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+          Results for &ldquo;{trimmed}&rdquo;
+        </p>
+      </div>
 
-      {isOpen && (
-        <div
-          className={clsx(
-            "absolute left-0 top-full z-20 mt-2 w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-900/95 shadow-[0_12px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl",
-            className,
-          )}
-        >
-          <ul className="max-h-72 overflow-y-auto">
-            {loading ? (
-              <li className="px-4 py-3 text-sm text-slate-500">Searching…</li>
-            ) : displayedResults.length > 0 ? (
-              displayedResults.map((product) => (
-                <li key={product.product_id} onClick={() => setQuery("")}>
-                  <Link
-                    href={`/products/${product.product_id}`}
-                    className="flex items-center justify-between px-4 py-3 text-sm text-slate-300 transition hover:bg-white/5"
-                  >
-                    <span className="truncate">{product.product_name}</span>
-                    <span className="ml-3 shrink-0 text-xs text-slate-500">
-                      {product.brand}
-                    </span>
-                  </Link>
-                </li>
-              ))
-            ) : (
-              <li className="cursor-default px-4 py-3 text-sm text-slate-500">
+      <ul className="max-h-80 overflow-y-auto py-3">
+        {loading ? (
+          <li className="px-5 py-4">
+            <div className="flex items-center gap-3">
+              <Sparkles size={18} className="text-[#6C63FF] animate-pulse" />
+              <span className="text-sm font-medium text-gray-500">
+                Searching...
+              </span>
+            </div>
+          </li>
+        ) : results.length > 0 ? (
+          results.map((product) => (
+            <li key={product.product_id}>
+              <Link
+                href={`/products/${product.product_id}`}
+                onClick={onClose}
+                className="flex items-center justify-between px-5 py-3.5 text-sm text-[#2D3436] hover:bg-linear-to-r hover:from-[#F0F8FF] hover:to-[#F8F0FF] transition-all duration-300 group"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-xl bg-linear-to-br from-[#F0F8FF] to-[#F8F0FF] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <Search size={16} className="text-[#6C63FF]" />
+                  </div>
+                  <span className="truncate font-medium">
+                    {product.product_name}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 ml-4 shrink-0">
+                  <span className="text-xs font-semibold text-[#6C63FF] bg-[#6C63FF]/5 px-3 py-1 rounded-full">
+                    {product.brand}
+                  </span>
+                  <ArrowRight
+                    size={16}
+                    className="text-gray-300 group-hover:text-[#6C63FF] group-hover:translate-x-1 transition-all duration-300"
+                  />
+                </div>
+              </Link>
+            </li>
+          ))
+        ) : (
+          <li className="px-5 py-6 text-center">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-[#F0F8FF] to-[#F8F0FF] flex items-center justify-center">
+                <Search size={28} className="text-gray-300" />
+              </div>
+              <p className="text-sm font-medium text-gray-400">
                 {emptyMessage}
-              </li>
-            )}
-          </ul>
-        </div>
-      )}
+              </p>
+            </div>
+          </li>
+        )}
+      </ul>
     </div>
   );
 }

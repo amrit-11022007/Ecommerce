@@ -37,3 +37,9 @@ export interface ProductPageProps {
     id: string;
   }>;
 }
+
+export interface UserPageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}

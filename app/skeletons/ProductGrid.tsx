@@ -2,14 +2,14 @@ import { CardSkeleton } from "./Card";
 
 export function ProductGridSkeleton() {
   return (
-    <section className="mx-auto mt-16 max-w-6xl">
-      <div className="mb-8 space-y-3">
-        <div className="h-4 w-20 animate-pulse rounded bg-white/10" />
-        <div className="h-8 w-56 animate-pulse rounded bg-white/10" />
+    <section className="container-premium py-16">
+      <div className="mb-10 space-y-3">
+        <div className="h-5 w-28 animate-pulse rounded-full bg-linear-to-r from-gray-200 to-gray-100" />
+        <div className="h-10 w-64 animate-pulse rounded-full bg-linear-to-r from-gray-200 to-gray-100" />
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {Array.from({ length: 6 }).map((_, index) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {Array.from({ length: 12 }).map((_, index) => (
           <CardSkeleton key={index} />
         ))}
       </div>
