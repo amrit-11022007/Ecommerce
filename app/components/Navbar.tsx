@@ -6,7 +6,7 @@ import { useState } from "react";
 import SearchResult from "./SearchResult";
 import NeoStoreLogo from "./Logo";
 
-export default function Navbar({ userId = "0" }) {
+export default function Navbar({ userId = "0", totalCartItems = 0 }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -119,7 +119,7 @@ export default function Navbar({ userId = "0" }) {
                 className="text-gray-500 group-hover:text-[#6C63FF] transition-colors duration-300"
               />
               <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-linear-to-r from-[#2874F0] to-[#6C63FF] text-white text-[10px] rounded-full flex items-center justify-center font-bold shadow-lg shadow-[#6C63FF]/30">
-                0
+                {totalCartItems}
               </span>
             </button>
           </Link>
