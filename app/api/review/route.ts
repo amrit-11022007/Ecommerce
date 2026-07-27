@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
     const rows = await prisma.reviews.findMany({
       where: {
-        product_id: Number(productId),
+        product_id: productId,
       },
       orderBy: {
         created_at: "desc",
@@ -37,9 +37,13 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json(
-      rows.map(({ Customers, ...review }) => ({
-        ...review,
-        customer_name: Customers.customer_name,
+      rows.map((item: (typeof rows)[number]) => ({
+        review_id: item.review_id,
+        rating: item.rating,
+        review: item.review,
+        comments: item.comments,
+        created_at: item.created_at,
+        customer_name: item.Customers.customer_name,
       })),
     );
   } catch (error) {
@@ -75,7 +79,7 @@ export async function POST(request: NextRequest) {
 
     await prisma.reviews.create({
       data: {
-        product_id: Number(product_id),
+        product_id: product_id,
         customer_id,
         rating: Number(rating),
         review: review ?? null,
@@ -119,7 +123,7 @@ export async function DELETE(request: NextRequest) {
 
     const result = await prisma.reviews.deleteMany({
       where: {
-        review_id: Number(id),
+        review_id: id,
         customer_id,
       },
     });

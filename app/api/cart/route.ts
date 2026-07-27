@@ -19,7 +19,7 @@ export async function GET() {
       );
 
     const cart = await prisma.cart.findFirst({
-      where: { customer_id: Number(customer_id) },
+      where: { customer_id: customer_id },
       select: { cart_id: true },
     });
 
@@ -43,10 +43,13 @@ export async function GET() {
 
     return NextResponse.json({
       cart_id: cart.cart_id,
-      items: items.map(({ Products, ...item }) => ({
-        ...item,
-        product_name: Products.product_name,
-        brand: Products.brand,
+      items: items.map((item: (typeof items)[number]) => ({
+        cart_item_id: item.cart_item_id,
+        product_id: item.product_id,
+        quantity: item.quantity,
+        price: item.price,
+        product_name: item.Products.product_name,
+        brand: item.Products.brand,
       })),
     });
   } catch (error) {
@@ -80,7 +83,7 @@ export async function POST(request: NextRequest) {
       );
 
     const product = await prisma.products.findUnique({
-      where: { product_id: Number(product_id) },
+      where: { product_id },
       select: { price: true },
     });
 
@@ -91,7 +94,7 @@ export async function POST(request: NextRequest) {
       );
 
     const cart = await prisma.cart.findFirst({
-      where: { customer_id: Number(customer_id) },
+      where: { customer_id },
       select: { cart_id: true },
     });
 
@@ -99,7 +102,7 @@ export async function POST(request: NextRequest) {
       cart?.cart_id ??
       (
         await prisma.cart.create({
-          data: { customer_id: Number(customer_id) },
+          data: { customer_id },
           select: { cart_id: true },
         })
       ).cart_id;
@@ -108,16 +111,16 @@ export async function POST(request: NextRequest) {
       where: {
         cart_id_product_id: {
           cart_id,
-          product_id: Number(product_id),
+          product_id,
         },
       },
       update: {
-        quantity: { increment: Number(quantity) },
+        quantity: { increment: quantity },
       },
       create: {
         cart_id,
-        product_id: Number(product_id),
-        quantity: Number(quantity),
+        product_id,
+        quantity,
         price: product.price,
       },
     });
@@ -158,13 +161,13 @@ export async function PATCH(request: NextRequest) {
 
     const result = await prisma.cartItems.updateMany({
       where: {
-        cart_item_id: Number(id),
+        cart_item_id: id,
         Cart: {
-          customer_id: Number(customer_id),
+          customer_id: customer_id,
         },
       },
       data: {
-        quantity: Number(quantity),
+        quantity: quantity,
       },
     });
 
@@ -200,9 +203,9 @@ export async function DELETE(request: NextRequest) {
 
     const result = await prisma.cartItems.deleteMany({
       where: {
-        cart_item_id: Number(id),
+        cart_item_id: id,
         Cart: {
-          customer_id: Number(customer_id),
+          customer_id: customer_id,
         },
       },
     });

@@ -99,7 +99,7 @@ async function GetProducts({ isAuthenticated }: { isAuthenticated: boolean }) {
       },
       take: 16,
     });
-    featuredProducts = rows.map((row) => ({
+    featuredProducts = rows.map((row: (typeof rows)[number]) => ({
       id: row.product_id,
       name: row.product_name,
       brand: row.brand,

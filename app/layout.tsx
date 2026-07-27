@@ -22,11 +22,8 @@ export default async function RootLayout({
 async function getId() {
   try {
     const session = await getServerSession(authOptions);
+    console.log(session);
     const userId = session?.user?.id;
-
-    if (typeof userId !== "string" || userId.length === 0) {
-      return undefined;
-    }
 
     return userId;
   } catch (error) {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
@@ -6,8 +5,15 @@ import { prisma } from "@/app/lib/database/prisma";
 
 export async function POST(req: Request) {
   try {
-    const { username, password, customer_name, mobile_number } =
-      await req.json();
+    const {
+      username,
+      password,
+      customer_name,
+      mobile_number,
+      city,
+      state,
+      country,
+    } = await req.json();
 
     const existingUser = await prisma.users.findUnique({
       where: { username },
@@ -31,6 +37,15 @@ export async function POST(req: Request) {
         },
       });
 
+      await tx.customer_address.create({
+        data: {
+          customer_id: customer.customer_id,
+          city,
+          state,
+          country,
+        },
+      });
+
       await tx.users.create({
         data: {
           customer_id: customer.customer_id,
@@ -43,6 +58,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ username });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: err }, { status: 500 });
+    return NextResponse.json({ error: "Registration failed" }, { status: 500 });
   }
 }

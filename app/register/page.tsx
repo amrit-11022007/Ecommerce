@@ -9,37 +9,86 @@ import {
   Sparkles,
   Eye,
   EyeOff,
+  MapPin,
+  Building2,
+  Globe,
 } from "lucide-react";
 
-import { UserData } from "../types/definitions";
-import Input from "../components/Input";
 import Button from "../components/Button";
 
+interface FormData {
+  username: string;
+  password: string;
+  customerName: string;
+  mobileNumber: string;
+  city: string;
+  state: string;
+  country: string;
+}
+
 export default function RegisterPage() {
-  const [userData, setUserData] = useState<UserData>({
+  const [formData, setFormData] = useState<FormData>({
     username: "",
     password: "",
     customerName: "",
     mobileNumber: "",
+    city: "",
+    state: "",
+    country: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [serverError, setServerError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  const validate = () => {
+    const newErrors: Partial<FormData> = {};
+
+    if (!formData.username.trim()) newErrors.username = "Username is required";
+    if (!formData.password.trim()) newErrors.password = "Password is required";
+    else if (formData.password.length < 6)
+      newErrors.password = "Minimum 6 characters";
+    if (!formData.customerName.trim())
+      newErrors.customerName = "Full name is required";
+    if (!formData.mobileNumber.trim())
+      newErrors.mobileNumber = "Mobile number is required";
+    else if (!/^\d{10}$/.test(formData.mobileNumber))
+      newErrors.mobileNumber = "Enter valid 10-digit number";
+    if (!formData.city.trim()) newErrors.city = "City is required";
+    if (!formData.state.trim()) newErrors.state = "State is required";
+    if (!formData.country.trim()) newErrors.country = "Country is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const updateField = (field: keyof FormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
+    setServerError("");
+
+    if (!validate()) return;
+
     setIsLoading(true);
 
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        username: userData.username,
-        password: userData.password,
-        customer_name: userData.customerName,
-        mobile_number: userData.mobileNumber,
+        username: formData.username,
+        password: formData.password,
+        customer_name: formData.customerName,
+        mobile_number: formData.mobileNumber,
+        city: formData.city,
+        state: formData.state,
+        country: formData.country,
       }),
     });
 
@@ -54,13 +103,18 @@ export default function RegisterPage() {
           ? String((data.error as { message?: unknown }).message)
           : "Registration failed");
 
-      setError(message);
+      setServerError(message);
     } else {
       router.push("/");
     }
 
     setIsLoading(false);
   }
+
+  const inputClass =
+    "w-full rounded-2xl border-2 border-gray-100 bg-white px-5 py-3.5 pl-12 text-sm text-[#2D3436] placeholder:text-gray-400 outline-none transition-all duration-300 focus:border-[#6C63FF] focus:ring-2 focus:ring-[#6C63FF]/20 focus:shadow-lg focus:shadow-[#6C63FF]/10 hover:border-gray-200";
+
+  const errorClass = "border-red-300 focus:border-red-400 focus:ring-red-200";
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#F0F8FF] via-white to-[#F8F0FF] px-4 py-8">
@@ -69,7 +123,7 @@ export default function RegisterPage() {
 
       <form
         onSubmit={handleRegister}
-        className="relative w-full max-w-md bg-white/80 backdrop-blur-xl border border-gray-100 rounded-[2.5rem] p-10 shadow-2xl shadow-[#6C63FF]/10 flex flex-col gap-5"
+        className="relative w-full max-w-md bg-white/80 backdrop-blur-xl border border-gray-100 rounded-[2.5rem] p-10 shadow-2xl shadow-[#6C63FF]/10 flex flex-col gap-4"
       >
         <div className="mb-2 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-linear-to-br from-[#6C63FF] to-[#2874F0] shadow-lg shadow-[#6C63FF]/30 mb-5">
@@ -83,113 +137,160 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <div className="space-y-4">
-          <label className="block">
-            <span className="mb-2 block text-sm font-semibold text-gray-600">
-              Username
-            </span>
+        <div className="space-y-3.5">
+          <div>
             <div className="relative">
               <User
                 size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10"
               />
-              <Input
+              <input
                 placeholder="Choose a username"
                 type="text"
-                name="username"
-                value={userData.username}
-                onChange={(value, field) =>
-                  setUserData((prev) => ({
-                    ...prev,
-                    [field ?? "username"]: value,
-                  }))
-                }
-                style="w-full rounded-2xl border-2 border-gray-100 bg-white px-5 py-3.5 pl-12 text-sm text-[#2D3436] placeholder:text-gray-400 outline-none transition-all duration-300 focus:border-[#6C63FF] focus:ring-2 focus:ring-[#6C63FF]/20 focus:shadow-lg focus:shadow-[#6C63FF]/10 hover:border-gray-200"
+                value={formData.username}
+                onChange={(e) => updateField("username", e.target.value)}
+                className={`${inputClass} ${errors.username ? errorClass : ""}`}
               />
             </div>
-          </label>
+            {errors.username && (
+              <p className="mt-1 text-xs font-medium text-red-500 pl-4">
+                {errors.username}
+              </p>
+            )}
+          </div>
 
-          <label className="block">
-            <span className="mb-2 block text-sm font-semibold text-gray-600">
-              Password
-            </span>
+          <div>
             <div className="relative">
               <Lock
                 size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10"
               />
-              <Input
+              <input
                 placeholder="Create a password"
                 type={showPassword ? "text" : "password"}
-                name="password"
-                value={userData.password}
-                onChange={(value, field) =>
-                  setUserData((prev) => ({
-                    ...prev,
-                    [field ?? "password"]: value,
-                  }))
-                }
-                style="w-full rounded-2xl border-2 border-gray-100 bg-white px-5 py-3.5 pl-12 pr-12 text-sm text-[#2D3436] placeholder:text-gray-400 outline-none transition-all duration-300 focus:border-[#6C63FF] focus:ring-2 focus:ring-[#6C63FF]/20 focus:shadow-lg focus:shadow-[#6C63FF]/10 hover:border-gray-200"
+                value={formData.password}
+                onChange={(e) => updateField("password", e.target.value)}
+                className={`${inputClass} pr-12 ${errors.password ? errorClass : ""}`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#6C63FF] transition-colors duration-300"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#6C63FF] transition-colors duration-300 z-10"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-          </label>
+            {errors.password && (
+              <p className="mt-1 text-xs font-medium text-red-500 pl-4">
+                {errors.password}
+              </p>
+            )}
+          </div>
 
-          <label className="block">
-            <span className="mb-2 block text-sm font-semibold text-gray-600">
-              Full Name
-            </span>
+          <div>
             <div className="relative">
               <UserCircle
                 size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10"
               />
-              <Input
+              <input
                 placeholder="Enter your full name"
                 type="text"
-                name="customerName"
-                value={userData.customerName}
-                onChange={(value, field) =>
-                  setUserData((prev) => ({
-                    ...prev,
-                    [field ?? "customerName"]: value,
-                  }))
-                }
-                style="w-full rounded-2xl border-2 border-gray-100 bg-white px-5 py-3.5 pl-12 text-sm text-[#2D3436] placeholder:text-gray-400 outline-none transition-all duration-300 focus:border-[#6C63FF] focus:ring-2 focus:ring-[#6C63FF]/20 focus:shadow-lg focus:shadow-[#6C63FF]/10 hover:border-gray-200"
+                value={formData.customerName}
+                onChange={(e) => updateField("customerName", e.target.value)}
+                className={`${inputClass} ${errors.customerName ? errorClass : ""}`}
               />
             </div>
-          </label>
+            {errors.customerName && (
+              <p className="mt-1 text-xs font-medium text-red-500 pl-4">
+                {errors.customerName}
+              </p>
+            )}
+          </div>
 
-          <label className="block">
-            <span className="mb-2 block text-sm font-semibold text-gray-600">
-              Mobile Number
-            </span>
+          <div>
             <div className="relative">
               <Phone
                 size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10"
               />
-              <Input
+              <input
                 placeholder="Enter your mobile number"
                 type="text"
-                name="mobileNumber"
-                value={userData.mobileNumber}
-                onChange={(value, field) =>
-                  setUserData((prev) => ({
-                    ...prev,
-                    [field ?? "mobileNumber"]: value,
-                  }))
-                }
-                style="w-full rounded-2xl border-2 border-gray-100 bg-white px-5 py-3.5 pl-12 text-sm text-[#2D3436] placeholder:text-gray-400 outline-none transition-all duration-300 focus:border-[#6C63FF] focus:ring-2 focus:ring-[#6C63FF]/20 focus:shadow-lg focus:shadow-[#6C63FF]/10 hover:border-gray-200"
+                value={formData.mobileNumber}
+                onChange={(e) => updateField("mobileNumber", e.target.value)}
+                className={`${inputClass} ${errors.mobileNumber ? errorClass : ""}`}
               />
             </div>
-          </label>
+            {errors.mobileNumber && (
+              <p className="mt-1 text-xs font-medium text-red-500 pl-4">
+                {errors.mobileNumber}
+              </p>
+            )}
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <div className="relative">
+                <MapPin
+                  size={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10"
+                />
+                <input
+                  placeholder="City"
+                  type="text"
+                  value={formData.city}
+                  onChange={(e) => updateField("city", e.target.value)}
+                  className={`w-full rounded-2xl border-2 border-gray-100 bg-white px-4 py-3.5 pl-10 text-sm text-[#2D3436] placeholder:text-gray-400 outline-none transition-all duration-300 focus:border-[#6C63FF] focus:ring-2 focus:ring-[#6C63FF]/20 focus:shadow-lg hover:border-gray-200 ${errors.city ? errorClass : ""}`}
+                />
+              </div>
+              {errors.city && (
+                <p className="mt-1 text-[10px] font-medium text-red-500 pl-2">
+                  {errors.city}
+                </p>
+              )}
+            </div>
+            <div>
+              <div className="relative">
+                <Building2
+                  size={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10"
+                />
+                <input
+                  placeholder="State"
+                  type="text"
+                  value={formData.state}
+                  onChange={(e) => updateField("state", e.target.value)}
+                  className={`w-full rounded-2xl border-2 border-gray-100 bg-white px-4 py-3.5 pl-10 text-sm text-[#2D3436] placeholder:text-gray-400 outline-none transition-all duration-300 focus:border-[#6C63FF] focus:ring-2 focus:ring-[#6C63FF]/20 focus:shadow-lg hover:border-gray-200 ${errors.state ? errorClass : ""}`}
+                />
+              </div>
+              {errors.state && (
+                <p className="mt-1 text-[10px] font-medium text-red-500 pl-2">
+                  {errors.state}
+                </p>
+              )}
+            </div>
+            <div>
+              <div className="relative">
+                <Globe
+                  size={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10"
+                />
+                <input
+                  placeholder="Country"
+                  type="text"
+                  value={formData.country}
+                  onChange={(e) => updateField("country", e.target.value)}
+                  className={`w-full rounded-2xl border-2 border-gray-100 bg-white px-4 py-3.5 pl-10 text-sm text-[#2D3436] placeholder:text-gray-400 outline-none transition-all duration-300 focus:border-[#6C63FF] focus:ring-2 focus:ring-[#6C63FF]/20 focus:shadow-lg hover:border-gray-200 ${errors.country ? errorClass : ""}`}
+                />
+              </div>
+              {errors.country && (
+                <p className="mt-1 text-[10px] font-medium text-red-500 pl-2">
+                  {errors.country}
+                </p>
+              )}
+            </div>
+          </div>
         </div>
 
         <Button
@@ -202,9 +303,9 @@ export default function RegisterPage() {
           className="mt-2 rounded-2xl shadow-xl shadow-[#6C63FF]/30 hover:shadow-2xl hover:shadow-[#6C63FF]/40"
         />
 
-        {error && (
+        {serverError && (
           <div className="flex items-center justify-center gap-2 rounded-2xl bg-red-50 border border-red-200 p-4">
-            <p className="text-sm font-semibold text-red-500">{error}</p>
+            <p className="text-sm font-semibold text-red-500">{serverError}</p>
           </div>
         )}
 

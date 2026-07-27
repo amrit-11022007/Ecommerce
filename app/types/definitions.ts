@@ -27,8 +27,11 @@ export interface UserData {
   mobileNumber: string;
 }
 
-export interface DisplayProduct extends Product {
+export interface DisplayProduct {
+  id: string;
+  name: string;
   brand: string;
+  price: number;
   rating: number;
 }
 

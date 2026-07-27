@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     const order = await prisma.orders.findFirst({
       where: {
-        order_id: Number(id),
+        order_id: id,
         customer_id,
       },
     });
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
 
     const items = await prisma.orderItems.findMany({
       where: {
-        order_id: Number(id),
+        order_id: id,
       },
       select: {
         order_item_id: true,
@@ -65,9 +65,15 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       ...order,
-      items: items.map(({ Products, ...item }) => ({
-        ...item,
-        product_name: Products.product_name,
+      items: items.map((item: (typeof items)[number]) => ({
+        order_item_id: item.order_item_id,
+        order_id: item.order_id,
+        product_id: item.product_id,
+        count: item.count,
+        amount: item.amount,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        product_name: item.Products.product_name,
       })),
     });
   } catch (error) {

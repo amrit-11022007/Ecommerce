@@ -13,15 +13,15 @@ export async function GET() {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const cacheKey = `user:${session.user.id}`;
+  const userId = String((session.user as any).id);
+  const cacheKey = `user:${userId}`;
 
   try {
-    //check redis
     const cached = await redis.get(cacheKey);
     if (cached) return NextResponse.json(JSON.parse(cached));
 
     const user = await prisma.users.findUnique({
-      where: { user_id: Number(session.user.id) },
+      where: { user_id: userId },
       select: {
         user_id: true,
         username: true,
