@@ -13,6 +13,7 @@ import {
   Package,
   ChevronRight,
   Edit3,
+  ShoppingCart,
 } from "lucide-react";
 
 interface UserData extends RowDataPacket {
@@ -24,11 +25,23 @@ interface UserData extends RowDataPacket {
   country: string;
 }
 
+interface CartItemData extends RowDataPacket {
+  product_name: string;
+  price: number;
+  product_id: string;
+  created_at: string;
+}
+
 export default async function UserPage({ params }: UserPageProps) {
   const user = await params;
 
   const [rows] = await db.query<UserData[]>(
     "SELECT u.username, c.customer_name, c.mobile_number, ca.city, ca.state, ca.country FROM Users u LEFT JOIN Customers c ON c.customer_id = U.customer_id INNER JOIN Customer_address ca ON ca.customer_id = c.customer_id WHERE u.user_id = ?",
+    [user.id],
+  );
+
+  const [cartRows] = await db.query<CartItemData[]>(
+    "SELECT p.product_name, p.price, ci.product_id, ci.created_at FROM cartitems ci INNER JOIN products p ON p.product_id = ci.product_id INNER JOIN cart c ON c.cart_id = ci.cart_id INNER JOIN users u ON u.customer_id = c.customer_id WHERE u.user_id = ? ORDER BY ci.created_at",
     [user.id],
   );
 
@@ -179,24 +192,63 @@ export default async function UserPage({ params }: UserPageProps) {
           <div className="bg-white rounded-[2.5rem] p-8 shadow-xl shadow-[#6C63FF]/5 border border-gray-100">
             <h2 className="text-xl font-bold text-[#2D3436] mb-6 flex items-center gap-3">
               <Package size={24} className="text-[#6C63FF]" />
-              Recent Orders
+              Cart Items
             </h2>
-            <div className="text-center py-8">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-linear-to-br from-[#F0F8FF] to-[#F8F0FF] mb-4">
-                <Package size={32} className="text-gray-300" />
+            {cartRows && cartRows.length > 0 ? (
+              <div className="max-h-85 overflow-y-auto pr-2 space-y-4 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
+                {cartRows.map((item) => (
+                  <Link
+                    key={item.product_id}
+                    href={`/products/${item.product_id}`}
+                    className="flex items-center gap-4 rounded-2xl bg-linear-to-br from-[#F0F8FF] to-[#F8F0FF] p-4 hover:shadow-md hover:scale-[1.02] transition-all duration-300 group"
+                  >
+                    <div className="w-16 h-16 rounded-xl bg-white flex items-center justify-center shrink-0 shadow-sm">
+                      <ShoppingCart size={24} className="text-[#6C63FF]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-[#2D3436] truncate group-hover:text-[#2874F0] transition-colors">
+                        {item.product_name}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <p className="text-lg font-bold text-[#2874F0]">
+                          ₹{Number(item.price).toLocaleString("en-IN")}
+                        </p>
+                        <span className="text-xs text-gray-400">
+                          {new Date(item.created_at).toLocaleDateString(
+                            "en-IN",
+                            {
+                              month: "short",
+                              day: "numeric",
+                            },
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                    <ChevronRight
+                      size={18}
+                      className="text-gray-300 group-hover:text-[#6C63FF] group-hover:translate-x-1 transition-all duration-300"
+                    />
+                  </Link>
+                ))}
               </div>
-              <p className="text-gray-500 font-medium">No recent orders</p>
-              <Link
-                href="/shop"
-                className="inline-flex items-center gap-2 mt-4 text-[#6C63FF] font-semibold hover:text-[#2874F0] transition-colors duration-300 group"
-              >
-                Start Shopping
-                <ChevronRight
-                  size={18}
-                  className="group-hover:translate-x-1 transition-transform duration-300"
-                />
-              </Link>
-            </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-linear-to-br from-[#F0F8FF] to-[#F8F0FF] mb-4">
+                  <Package size={32} className="text-gray-300" />
+                </div>
+                <p className="text-gray-500 font-medium">No items in cart</p>
+                <Link
+                  href="/shop"
+                  className="inline-flex items-center gap-2 mt-4 text-[#6C63FF] font-semibold hover:text-[#2874F0] transition-colors duration-300 group"
+                >
+                  Start Shopping
+                  <ChevronRight
+                    size={18}
+                    className="group-hover:translate-x-1 transition-transform duration-300"
+                  />
+                </Link>
+              </div>
+            )}
           </div>
 
           <div className="bg-white rounded-[2.5rem] p-8 shadow-xl shadow-[#6C63FF]/5 border border-gray-100">
