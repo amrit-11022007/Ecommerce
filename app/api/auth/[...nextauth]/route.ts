@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "@/app/lib/database/prisma";
+import { loginSchema } from "@/app/lib/validation/schema";
 
 export const authOptions: AuthOptions = {
   session: { strategy: "jwt" },
@@ -15,10 +16,10 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const username = credentials?.username;
-        const password = credentials?.password;
+        const parsed = loginSchema.safeParse(credentials);
+        if (!parsed.success) return null;
 
-        if (!username || !password) return null;
+        const { username, password } = parsed.data;
 
         const user = await prisma.users.findUnique({
           where: { username },

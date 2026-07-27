@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getCustomerId } from "@/app/lib/auth/getCustomerId";
 import { prisma } from "@/app/lib/database/prisma";
+import { cartSchema } from "@/app/lib/validation/schema";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -67,7 +68,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
 
   try {
-    const { product_id, quantity } = await request.json();
+    const body = await request.json();
+    const parsed = cartSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { errors: parsed.error.flatten().fieldErrors },
+        { status: 400 },
+      );
+    }
+    const { product_id, quantity } = parsed.data;
     if (!product_id || !quantity || quantity < 1) {
       return NextResponse.json(
         { message: "product_id and quantity (>=1) required" },
