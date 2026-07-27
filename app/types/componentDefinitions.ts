@@ -40,4 +40,5 @@ export type ProductGridProps = {
   eyebrow: string;
   heading: string;
   products: DisplayProduct[];
+  isAuthenticated?: boolean;
 };

@@ -1,13 +1,17 @@
 import { Suspense } from "react";
-
+import { getServerSession } from "next-auth";
 import { ProductGrid } from "./components/ProductGrid";
 import { ProductGridSkeleton } from "./skeletons/ProductGrid";
 import { DisplayProduct } from "./types/definitions";
 import { Hero } from "./components/Hero";
 import { prisma } from "./lib/database/prisma";
+import { authOptions } from "./api/auth/[...nextauth]/route";
 import { Sparkles, Truck, Shield, RotateCcw } from "lucide-react";
 
 export default async function Home() {
+  const session = await getServerSession(authOptions);
+  const isAuthenticated = !!session?.user;
+
   return (
     <main>
       <Hero
@@ -77,13 +81,13 @@ export default async function Home() {
       </div>
 
       <Suspense fallback={<ProductGridSkeleton />}>
-        <GetProducts />
+        <GetProducts isAuthenticated={isAuthenticated} />
       </Suspense>
     </main>
   );
 }
 
-async function GetProducts() {
+async function GetProducts({ isAuthenticated }: { isAuthenticated: boolean }) {
   let featuredProducts: DisplayProduct[] = [];
   try {
     const rows = await prisma.products.findMany({
@@ -111,6 +115,7 @@ async function GetProducts() {
       eyebrow="Curated Shelf"
       heading="Featured Products"
       products={featuredProducts}
+      isAuthenticated={isAuthenticated}
     />
   );
 }

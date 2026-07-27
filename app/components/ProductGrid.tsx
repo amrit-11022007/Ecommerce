@@ -1,7 +1,12 @@
 import type { ProductGridProps } from "../types/componentDefinitions";
 import { Card } from "@/app/components/Card";
 
-export function ProductGrid({ eyebrow, heading, products }: ProductGridProps) {
+export function ProductGrid({
+  eyebrow,
+  heading,
+  products,
+  isAuthenticated,
+}: ProductGridProps) {
   return (
     <section className="container-premium py-16">
       <div className="mb-10 flex items-end justify-between">
@@ -15,11 +20,21 @@ export function ProductGrid({ eyebrow, heading, products }: ProductGridProps) {
             {heading}
           </h2>
         </div>
+        <button className="hidden sm:inline-flex items-center gap-2 rounded-full border-2 border-gray-200 px-6 py-3 text-sm font-semibold text-gray-600 hover:border-[#6C63FF] hover:text-[#6C63FF] hover:shadow-lg hover:shadow-[#6C63FF]/10 transition-all duration-300 group">
+          View All
+          <span className="transition-transform duration-300 group-hover:translate-x-1">
+            →
+          </span>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {products.slice(0, 12).map((product) => (
-          <Card key={product.id} product={product} />
+          <Card
+            key={product.id}
+            product={product}
+            isAuthenticated={isAuthenticated}
+          />
         ))}
       </div>
 
