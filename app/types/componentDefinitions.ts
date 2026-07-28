@@ -42,3 +42,9 @@ export type ProductGridProps = {
   products: DisplayProduct[];
   isAuthenticated?: boolean;
 };
+
+export type WishlistItem = {
+  id: string;
+  name: string;
+  price: number;
+};

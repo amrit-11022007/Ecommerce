@@ -15,6 +15,7 @@ import {
   Edit3,
   ShoppingCart,
 } from "lucide-react";
+import WishlistBox from "@/app/components/WishListBox";
 
 interface UserData extends RowDataPacket {
   username: string;
@@ -250,31 +251,7 @@ export default async function UserPage({ params }: UserPageProps) {
               </div>
             )}
           </div>
-
-          <div className="bg-white rounded-[2.5rem] p-8 shadow-xl shadow-[#6C63FF]/5 border border-gray-100">
-            <h2 className="text-xl font-bold text-[#2D3436] mb-6 flex items-center gap-3">
-              <Heart size={24} className="text-red-400" />
-              Wishlist
-            </h2>
-            <div className="text-center py-8">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-linear-to-br from-red-50 to-pink-50 mb-4">
-                <Heart size={32} className="text-red-300" />
-              </div>
-              <p className="text-gray-500 font-medium">
-                Your wishlist is empty
-              </p>
-              <Link
-                href="/shop"
-                className="inline-flex items-center gap-2 mt-4 text-red-400 font-semibold hover:text-red-500 transition-colors duration-300 group"
-              >
-                Browse Products
-                <ChevronRight
-                  size={18}
-                  className="group-hover:translate-x-1 transition-transform duration-300"
-                />
-              </Link>
-            </div>
-          </div>
+          <WishlistBox />
         </div>
       </div>
     </div>

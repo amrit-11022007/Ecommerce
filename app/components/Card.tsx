@@ -5,6 +5,11 @@ import type { DisplayProduct } from "@/app/types/definitions";
 import { Plus, Star, Heart, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  addToWishlist,
+  inWishlist,
+  removeFromWishlist,
+} from "../lib/whishlist";
 
 type ProductCardProps = {
   product: DisplayProduct;
@@ -12,7 +17,9 @@ type ProductCardProps = {
 };
 
 export function Card({ product, isAuthenticated = false }: ProductCardProps) {
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(() =>
+    inWishlist(product.id),
+  );
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const [error, setError] = useState("");
@@ -64,6 +71,7 @@ export function Card({ product, isAuthenticated = false }: ProductCardProps) {
     }
   };
 
+  // In the Card component:
   const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -73,14 +81,24 @@ export function Card({ product, isAuthenticated = false }: ProductCardProps) {
       return;
     }
 
-    setIsWishlisted(!isWishlisted);
+    if (isWishlisted) {
+      removeFromWishlist(product.id);
+      setIsWishlisted(false);
+    } else {
+      addToWishlist({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+      });
+      setIsWishlisted(true);
+    }
   };
 
   return (
     <Link href={`/products/${product.id}`} className="block">
       <article className="group relative flex flex-col gap-4 rounded-3xl bg-white border border-gray-100 p-4 transition-all duration-500 hover:shadow-xl hover:shadow-[#6C63FF]/10 hover:-translate-y-2 hover:border-[#6C63FF]/20">
         <button
-          onClick={handleWishlist}
+          onClick={(e) => handleWishlist(e)}
           className="absolute top-6 right-6 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-300 hover:bg-white hover:shadow-md hover:scale-110"
         >
           <Heart
@@ -121,7 +139,7 @@ export function Card({ product, isAuthenticated = false }: ProductCardProps) {
         <div className="flex items-end justify-between mt-auto pointer-events-none">
           <div>
             <span className="text-2xl font-bold text-[#2D3436] tracking-tight">
-              {product.price}
+              {Number(product.price)}
             </span>
             {error && (
               <p className="text-[10px] font-medium text-red-500 mt-1">

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search, ShoppingBag, User, X, Menu, Heart } from "lucide-react";
+import { Search, ShoppingBag, User, X, Menu } from "lucide-react";
 import { useState } from "react";
 import SearchResult from "./SearchResult";
 import NeoStoreLogo from "./Logo";
@@ -17,7 +17,7 @@ export default function Navbar({ userId = "0", totalCartItems = 0 }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 shadow-sm">
+    <header className="px-5 sticky top-0 z-50 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 shadow-sm">
       <nav className="container-premium h-20 flex items-center justify-between">
         <Link
           href="/"
@@ -28,20 +28,20 @@ export default function Navbar({ userId = "0", totalCartItems = 0 }) {
 
         <div className="hidden md:flex items-center gap-8">
           <Link
+            href="/"
+            className="text-sm font-medium text-black hover:text-[#2D3436] transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-linear-to-r after:from-[#2874F0] after:to-[#6C63FF] after:rounded-full after:transition-all after:duration-300 hover:after:w-full"
+          >
+            Home
+          </Link>
+          <Link
             href="/shop"
-            className="relative text-sm font-semibold text-[#2874F0] pb-1 after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-linear-to-r after:from-[#2874F0] after:to-[#6C63FF] after:rounded-full"
+            className="text-sm font-medium text-black hover:text-[#2D3436] transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-linear-to-r after:from-[#2874F0] after:to-[#6C63FF] after:rounded-full after:transition-all after:duration-300 hover:after:w-full"
           >
             Shop
           </Link>
           <Link
-            href="/new-arrivals"
-            className="text-sm font-medium text-gray-500 hover:text-[#2D3436] transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-linear-to-r after:from-[#2874F0] after:to-[#6C63FF] after:rounded-full after:transition-all after:duration-300 hover:after:w-full"
-          >
-            New Arrivals
-          </Link>
-          <Link
             href="/collections"
-            className="text-sm font-medium text-gray-500 hover:text-[#2D3436] transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-linear-to-r after:from-[#2874F0] after:to-[#6C63FF] after:rounded-full after:transition-all after:duration-300 hover:after:w-full"
+            className="text-sm font-medium text-black hover:text-[#2D3436] transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-linear-to-r after:from-[#2874F0] after:to-[#6C63FF] after:rounded-full after:transition-all after:duration-300 hover:after:w-full"
           >
             Collections
           </Link>
@@ -96,18 +96,6 @@ export default function Navbar({ userId = "0", totalCartItems = 0 }) {
           >
             {isSearchOpen ? <X size={22} /> : <Search size={22} />}
           </button>
-
-          <Link href="/wishlist">
-            <button
-              aria-label="Wishlist"
-              className="relative flex h-12 w-12 items-center justify-center rounded-2xl border-2 border-gray-100 bg-gray-50 hover:border-[#FF6B6B]/30 hover:bg-red-50 hover:shadow-lg hover:shadow-red-100 transition-all duration-300 group"
-            >
-              <Heart
-                size={20}
-                className="text-gray-500 group-hover:text-red-400 transition-colors duration-300"
-              />
-            </button>
-          </Link>
 
           <Link href="/cart">
             <button

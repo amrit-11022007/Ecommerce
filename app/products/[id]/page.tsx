@@ -9,11 +9,11 @@ import {
   Truck,
   Shield,
   RotateCcw,
-  Heart,
   Share2,
   Minus,
   Plus,
 } from "lucide-react";
+import HeartIcon from "@/app/components/wishlisticon";
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params;
@@ -86,12 +86,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <section className="grid gap-8 lg:grid-cols-[1fr_1fr]">
           <div className="relative overflow-hidden rounded-[3rem] bg-linear-to-br from-[#F0F8FF] to-[#F8F0FF] border border-gray-100 p-12 shadow-2xl shadow-[#6C63FF]/5 group">
             <div className="absolute top-6 right-6 z-10 flex gap-2">
-              <button className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-300 hover:bg-white hover:shadow-md hover:scale-110">
-                <Heart
-                  size={20}
-                  className="text-gray-400 hover:text-red-400 transition-colors duration-300"
-                />
-              </button>
+              <HeartIcon
+                name={product.product_name}
+                price={Number(product.price)}
+                id={id}
+              />
               <button className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-300 hover:bg-white hover:shadow-md hover:scale-110">
                 <Share2
                   size={20}
