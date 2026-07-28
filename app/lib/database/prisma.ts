@@ -4,6 +4,10 @@ import "dotenv/config";
 import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 
+declare global {
+  var prisma: PrismaClient | undefined;
+}
+
 const adapter = new PrismaMariaDb({
   host: process.env.DB_HOST!,
   port: Number(process.env.DB_PORT ?? 3306),
@@ -12,4 +16,8 @@ const adapter = new PrismaMariaDb({
   database: process.env.DB_DATABASE!,
 });
 
-export const prisma = new PrismaClient({ adapter });
+export const prisma = globalThis.prisma ?? new PrismaClient({ adapter });
+
+if (process.env.NODE_ENV === "development") {
+  globalThis.prisma = prisma;
+}
