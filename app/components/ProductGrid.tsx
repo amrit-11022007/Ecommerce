@@ -37,15 +37,6 @@ export function ProductGrid({
           />
         ))}
       </div>
-
-      {products.length > 12 && (
-        <div className="mt-12 text-center">
-          <button className="inline-flex items-center gap-2 rounded-full bg-linear-to-r from-[#2874F0] to-[#6C63FF] px-8 py-4 text-base font-semibold text-white shadow-xl shadow-[#6C63FF]/30 hover:shadow-2xl hover:shadow-[#6C63FF]/40 hover:scale-105 transition-all duration-300">
-            Load More Products
-            <span>↓</span>
-          </button>
-        </div>
-      )}
     </section>
   );
 }
