@@ -1,6 +1,7 @@
 import Button from "@/app/components/Button";
-import { HeroProps } from "../types/componentDefinitions";
 import NeoStoreLogo from "./Logo";
+
+import { HeroProps } from "../types/componentDefinitions";
 
 export function Hero({ eyebrow, title, description, ctaLabel }: HeroProps) {
   return (

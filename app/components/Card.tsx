@@ -1,20 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import type { DisplayProduct } from "@/app/types/definitions";
 import { Plus, Star, Heart, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+
 import {
   addToWishlist,
   inWishlist,
   removeFromWishlist,
 } from "../lib/whishlist";
 
-type ProductCardProps = {
-  product: DisplayProduct;
-  isAuthenticated?: boolean;
-};
+import { ProductCardProps } from "../types/componentDefinitions";
 
 export function Card({ product, isAuthenticated = false }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(() =>

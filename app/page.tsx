@@ -1,12 +1,14 @@
 import { Suspense } from "react";
 import { getServerSession } from "next-auth";
+import { Sparkles, Truck, Shield, RotateCcw } from "lucide-react";
+
 import { ProductGrid } from "./components/ProductGrid";
 import { ProductGridSkeleton } from "./skeletons/ProductGrid";
-import { DisplayProduct } from "./types/definitions";
 import { Hero } from "./components/Hero";
 import { prisma } from "./lib/database/prisma";
 import { authOptions } from "./api/auth/[...nextauth]/route";
-import { Sparkles, Truck, Shield, RotateCcw } from "lucide-react";
+
+import { DisplayProduct } from "./types/definitions";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);

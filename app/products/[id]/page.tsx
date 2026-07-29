@@ -1,12 +1,14 @@
 import { prisma } from "@/app/lib/database/prisma";
-import { ProductPageProps } from "@/app/types/definitions";
 import { notFound } from "next/navigation";
 import { Star, ShoppingBag } from "lucide-react";
 import HeartIcon from "@/app/components/wishlisticon";
+
 import ClipboardButton from "@/app/components/ClipBoardButton";
 import { AddToCartButton } from "@/app/components/AddToCartButton";
 import Button from "@/app/components/Button";
 import Input from "@/app/components/Input";
+
+import { ProductPageProps } from "@/app/types/definitions";
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params;

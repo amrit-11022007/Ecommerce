@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Search, ShoppingBag, User, X, Menu } from "lucide-react";
 import { useState } from "react";
+
 import SearchResult from "./SearchResult";
 import NeoStoreLogo from "./Logo";
 

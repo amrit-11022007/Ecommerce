@@ -1,5 +1,6 @@
-import type { ProductGridProps } from "../types/componentDefinitions";
 import { Card } from "@/app/components/Card";
+
+import type { ProductGridProps } from "../types/componentDefinitions";
 
 export function ProductGrid({
   eyebrow,

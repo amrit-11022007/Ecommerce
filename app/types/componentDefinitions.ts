@@ -48,3 +48,13 @@ export type WishlistItem = {
   name: string;
   price: number;
 };
+
+export type AddToCartButtonProps = {
+  productId: string;
+  stockCount: number;
+};
+
+export type ProductCardProps = {
+  product: DisplayProduct;
+  isAuthenticated?: boolean;
+};

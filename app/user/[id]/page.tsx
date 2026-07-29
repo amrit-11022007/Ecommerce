@@ -1,8 +1,4 @@
-import { db } from "@/app/lib/database/db";
-import { UserPageProps } from "@/app/types/definitions";
-import { RowDataPacket } from "mysql2";
 import Link from "next/link";
-import { redis } from "@/app/lib/redis/client";
 import {
   ArrowLeft,
   User,
@@ -16,20 +12,13 @@ import {
   Edit3,
   ShoppingCart,
 } from "lucide-react";
+
+import { redis } from "@/app/lib/redis/client";
+import { db } from "@/app/lib/database/db";
 import WishlistBox from "@/app/components/WishListBox";
 
-interface UserData extends RowDataPacket {
-  username: string;
-  customer_name: string;
-  mobile_number: string;
-  city: string;
-  state: string;
-  country: string;
-  product_name: string;
-  price: number;
-  product_id: string;
-  created_at: string;
-}
+import { UserData } from "@/app/types/definitions";
+import { UserPageProps } from "@/app/types/definitions";
 
 export default async function UserPage({ params }: UserPageProps) {
   const user = await params;

@@ -1,8 +1,10 @@
 "use client";
 
 import clsx from "clsx";
-import { InputProps } from "../types/componentDefinitions";
+
 import { Search } from "lucide-react";
+
+import { InputProps } from "../types/componentDefinitions";
 
 export default function Input({
   placeholder,

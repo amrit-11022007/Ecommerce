@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Heart, ChevronRight } from "lucide-react";
+
 import type { WishlistItem } from "../types/componentDefinitions";
 
 function getWishlistItems(): WishlistItem[] {

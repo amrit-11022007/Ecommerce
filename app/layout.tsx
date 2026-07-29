@@ -1,13 +1,11 @@
 import { getServerSession } from "next-auth";
+
 import Navbar from "./components/Navbar";
 import "./globals.css";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import { db } from "./lib/database/db";
-import { RowDataPacket } from "mysql2";
 
-interface CartCount extends RowDataPacket {
-  totalCartItems: number;
-}
+import { CartCount } from "./types/definitions";
 
 export default async function RootLayout({
   children,

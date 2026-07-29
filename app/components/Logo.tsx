@@ -1,6 +1,3 @@
-import React from "react";
-
-// 1. Define explicit types for variants and sizes
 type LogoVariant = "standard" | "uppercase" | "lowercase";
 type LogoSize = "sm" | "md" | "lg" | "xl";
 

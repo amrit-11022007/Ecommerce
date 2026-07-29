@@ -1,6 +1,7 @@
 // app/api/auth/register/route.ts
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+
 import { prisma } from "@/app/lib/database/prisma";
 import { registerSchema } from "@/app/lib/validation/schema";
 

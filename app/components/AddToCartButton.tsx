@@ -14,10 +14,7 @@ import {
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-type AddToCartButtonProps = {
-  productId: string;
-  stockCount: number;
-};
+import { AddToCartButtonProps } from "../types/componentDefinitions";
 
 export function AddToCartButton({
   productId,

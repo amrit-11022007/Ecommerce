@@ -16,15 +16,7 @@ import {
 
 import Button from "../components/Button";
 
-interface FormData {
-  username: string;
-  password: string;
-  customerName: string;
-  mobileNumber: string;
-  city: string;
-  state: string;
-  country: string;
-}
+import { FormData } from "../types/definitions";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState<FormData>({

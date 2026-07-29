@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+
 import type { ProductRow } from "@/app/types/definitions";
 import { Search, Sparkles, ArrowRight } from "lucide-react";
 
