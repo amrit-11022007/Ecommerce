@@ -40,7 +40,7 @@ export function Card({ product, isAuthenticated = false }: ProductCardProps) {
     setError("");
 
     try {
-      const res = await fetch("/api/cart", {
+      const res = await fetch(`/api/cart?id=${product.id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

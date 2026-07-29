@@ -20,11 +20,12 @@ export async function GET() {
       );
 
     const cart = await prisma.cart.findFirst({
-      where: { customer_id: customer_id },
+      where: { customer_id },
       select: { cart_id: true },
     });
 
-    if (!cart) return NextResponse.json({ cart_id: null, items: [] });
+    if (!cart)
+      return NextResponse.json({ cart_id: null, items: [], totalItems: 0 });
 
     const items = await prisma.cartItems.findMany({
       where: { cart_id: cart.cart_id },
@@ -37,21 +38,34 @@ export async function GET() {
           select: {
             product_name: true,
             brand: true,
+            Inventory: {
+              select: { available_count: true },
+              take: 1,
+            },
           },
         },
       },
     });
 
+    const mappedItems = items.map((item) => ({
+      cart_item_id: item.cart_item_id,
+      product_id: item.product_id,
+      quantity: item.quantity,
+      price: item.price,
+      product_name: item.Products.product_name,
+      brand: item.Products.brand,
+      available_count: item.Products.Inventory[0]?.available_count ?? 0,
+    }));
+
+    const totalItems = mappedItems.reduce(
+      (sum, item) => sum + item.quantity,
+      0,
+    );
+
     return NextResponse.json({
       cart_id: cart.cart_id,
-      items: items.map((item: (typeof items)[number]) => ({
-        cart_item_id: item.cart_item_id,
-        product_id: item.product_id,
-        quantity: item.quantity,
-        price: item.price,
-        product_name: item.Products.product_name,
-        brand: item.Products.brand,
-      })),
+      items: mappedItems,
+      totalItems,
     });
   } catch (error) {
     console.error("Failed to fetch cart:", error);
@@ -77,12 +91,6 @@ export async function POST(request: NextRequest) {
       );
     }
     const { product_id, quantity } = parsed.data;
-    if (!product_id || !quantity || quantity < 1) {
-      return NextResponse.json(
-        { message: "product_id and quantity (>=1) required" },
-        { status: 400 },
-      );
-    }
 
     const customer_id = await getCustomerId(session.user.id);
     if (!customer_id)
@@ -93,7 +101,13 @@ export async function POST(request: NextRequest) {
 
     const product = await prisma.products.findUnique({
       where: { product_id },
-      select: { price: true },
+      select: {
+        price: true,
+        Inventory: {
+          select: { available_count: true },
+          take: 1,
+        },
+      },
     });
 
     if (!product)
@@ -155,9 +169,9 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ message: "id is required" }, { status: 400 });
 
     const { quantity } = await request.json();
-    if (!quantity || quantity < 1)
+    if (!quantity || quantity < 1 || quantity > 10)
       return NextResponse.json(
-        { message: "quantity must be >= 1" },
+        { message: "quantity must be between 1 and 10" },
         { status: 400 },
       );
 
@@ -168,16 +182,34 @@ export async function PATCH(request: NextRequest) {
         { status: 400 },
       );
 
-    const result = await prisma.cartItems.updateMany({
-      where: {
-        cart_item_id: id,
-        Cart: {
-          customer_id: customer_id,
+    const product = await prisma.products.findUnique({
+      where: { product_id: id },
+      select: {
+        Inventory: {
+          select: { available_count: true },
+          take: 1,
         },
       },
-      data: {
-        quantity: quantity,
+    });
+
+    const available = product?.Inventory[0]?.available_count ?? 0;
+
+    if (quantity > available) {
+      return NextResponse.json(
+        {
+          message: "Not enough stock",
+          available_count: available,
+        },
+        { status: 400 },
+      );
+    }
+
+    const result = await prisma.cartItems.updateMany({
+      where: {
+        product_id: id,
+        Cart: { customer_id },
       },
+      data: { quantity },
     });
 
     if (result.count === 0) {
@@ -212,10 +244,8 @@ export async function DELETE(request: NextRequest) {
 
     const result = await prisma.cartItems.deleteMany({
       where: {
-        cart_item_id: id,
-        Cart: {
-          customer_id: customer_id,
-        },
+        product_id: id,
+        Cart: { customer_id },
       },
     });
 

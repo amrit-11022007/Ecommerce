@@ -97,7 +97,7 @@ export default function Navbar({ userId = "0", totalCartItems = 0 }) {
             {isSearchOpen ? <X size={22} /> : <Search size={22} />}
           </button>
 
-          <Link href="/cart">
+          <Link href={`/cart/${userId}`}>
             <button
               aria-label="Shopping bag"
               className="relative flex h-12 w-12 items-center justify-center rounded-2xl border-2 border-gray-100 bg-gray-50 hover:border-[#6C63FF]/30 hover:bg-[#F0F8FF] hover:shadow-lg hover:shadow-[#6C63FF]/10 transition-all duration-300 group"
