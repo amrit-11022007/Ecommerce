@@ -1,19 +1,12 @@
 import { prisma } from "@/app/lib/database/prisma";
 import { ProductPageProps } from "@/app/types/definitions";
 import { notFound } from "next/navigation";
+import { Star, ShoppingBag } from "lucide-react";
+import HeartIcon from "@/app/components/wishlisticon";
+import ClipboardButton from "@/app/components/ClipBoardButton";
+import { AddToCartButton } from "@/app/components/AddToCartButton";
 import Button from "@/app/components/Button";
 import Input from "@/app/components/Input";
-import {
-  Star,
-  ShoppingBag,
-  Truck,
-  Shield,
-  RotateCcw,
-  Share2,
-  Minus,
-  Plus,
-} from "lucide-react";
-import HeartIcon from "@/app/components/wishlisticon";
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params;
@@ -91,12 +84,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 price={Number(product.price)}
                 id={id}
               />
-              <button className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-300 hover:bg-white hover:shadow-md hover:scale-110">
-                <Share2
-                  size={20}
-                  className="text-gray-400 hover:text-[#6C63FF] transition-colors duration-300"
-                />
-              </button>
+              <ClipboardButton />
             </div>
             <div className="flex items-center justify-center transition-transform duration-700 group-hover:scale-110 group-hover:rotate-3">
               <div className="text-center">
@@ -170,58 +158,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               {product.description}
             </p>
 
-            <div className="mt-8 flex items-center gap-4">
-              <div className="flex items-center gap-3 rounded-2xl border-2 border-gray-200 p-2">
-                <button className="flex h-10 w-10 items-center justify-center rounded-xl hover:bg-gray-100 transition-colors duration-300">
-                  <Minus size={20} className="text-gray-600" />
-                </button>
-                <span className="text-lg font-bold text-[#2D3436] min-w-8 text-center">
-                  1
-                </span>
-                <button className="flex h-10 w-10 items-center justify-center rounded-xl hover:bg-gray-100 transition-colors duration-300">
-                  <Plus size={20} className="text-gray-600" />
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-6 flex flex-wrap gap-4">
-              <Button
-                text="Add to Cart"
-                type="button"
-                variant="primary"
-                size="lg"
-                icon={ShoppingBag}
-                className="rounded-2xl shadow-xl shadow-[#6C63FF]/30 hover:shadow-2xl hover:shadow-[#6C63FF]/40 flex-1"
-              />
-              <Button
-                text="Buy Now"
-                type="button"
-                variant="outline"
-                size="lg"
-                className="rounded-2xl flex-1"
-              />
-            </div>
-
-            <div className="mt-8 grid grid-cols-3 gap-4">
-              <div className="flex flex-col items-center gap-2 rounded-2xl bg-[#F0F8FF] p-4">
-                <Truck size={22} className="text-[#2874F0]" />
-                <span className="text-xs font-semibold text-gray-600 text-center">
-                  Free Shipping
-                </span>
-              </div>
-              <div className="flex flex-col items-center gap-2 rounded-2xl bg-[#FFF5E7] p-4">
-                <Shield size={22} className="text-[#FF9F43]" />
-                <span className="text-xs font-semibold text-gray-600 text-center">
-                  Secure Pay
-                </span>
-              </div>
-              <div className="flex flex-col items-center gap-2 rounded-2xl bg-[#F0FFF4] p-4">
-                <RotateCcw size={22} className="text-green-500" />
-                <span className="text-xs font-semibold text-gray-600 text-center">
-                  Easy Return
-                </span>
-              </div>
-            </div>
+            <AddToCartButton productId={id} stockCount={stockCount} />
           </div>
         </section>
 
@@ -266,10 +203,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 <span className="text-sm font-medium text-gray-500">
                   Availability
                 </span>
-                <span className="inline-flex items-center gap-2 text-sm font-bold text-green-500 bg-green-50 px-4 py-2 rounded-full">
-                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                  {stockCount} in stock
-                </span>
+                {stockCount >= 10 ? (
+                  <span className="inline-flex items-center gap-2 text-sm font-bold text-green-500 bg-green-50 px-4 py-2 rounded-full">
+                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    {stockCount} in stock
+                  </span>
+                ) : stockCount >= 1 && stockCount < 10 ? (
+                  <span className="inline-flex items-center gap-2 text-sm font-bold text-yello-500 bg-yello-50 px-4 py-2 rounded-full">
+                    <span className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
+                    {stockCount} in stock
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-2 text-sm font-bold text-red-500 bg-red-50 px-4 py-2 rounded-full">
+                    <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                    {stockCount} in stock
+                  </span>
+                )}
               </div>
               <div className="flex items-center justify-between py-4">
                 <span className="text-sm font-medium text-gray-500">
