@@ -2,6 +2,7 @@ import { db } from "@/app/lib/database/db";
 import { UserPageProps } from "@/app/types/definitions";
 import { RowDataPacket } from "mysql2";
 import Link from "next/link";
+import { redis } from "@/app/lib/redis/client";
 import {
   ArrowLeft,
   User,
@@ -24,9 +25,6 @@ interface UserData extends RowDataPacket {
   city: string;
   state: string;
   country: string;
-}
-
-interface CartItemData extends RowDataPacket {
   product_name: string;
   price: number;
   product_id: string;
@@ -36,17 +34,54 @@ interface CartItemData extends RowDataPacket {
 export default async function UserPage({ params }: UserPageProps) {
   const user = await params;
 
-  const [rows] = await db.query<UserData[]>(
-    "SELECT u.username, c.customer_name, c.mobile_number, ca.city, ca.state, ca.country FROM Users u LEFT JOIN Customers c ON c.customer_id = U.customer_id INNER JOIN Customer_address ca ON ca.customer_id = c.customer_id WHERE u.user_id = ?",
-    [user.id],
-  );
+  const cacheKey = `user:${user.id}`;
+  const cached = await redis.get(cacheKey);
 
-  const [cartRows] = await db.query<CartItemData[]>(
-    "SELECT p.product_name, p.price, ci.product_id, ci.created_at FROM cartitems ci INNER JOIN products p ON p.product_id = ci.product_id INNER JOIN cart c ON c.cart_id = ci.cart_id INNER JOIN users u ON u.customer_id = c.customer_id WHERE u.user_id = ? ORDER BY ci.created_at",
-    [user.id],
-  );
+  let userData: UserData | null = null;
+  let cartItems: UserData[] = [];
 
-  if (!rows || rows.length === 0) {
+  if (cached) {
+    const parsed = JSON.parse(cached);
+    userData = parsed.userData;
+    cartItems = parsed.cartItems;
+  } else {
+    const [rows] = await db.query<UserData[]>(
+      `SELECT 
+        u.username, 
+        c.customer_name, 
+        c.mobile_number, 
+        ca.city, 
+        ca.state, 
+        ca.country,
+        p.product_name,
+        p.price,
+        p.product_id,
+        ci.created_at
+      FROM Users u 
+      LEFT JOIN Customers c ON c.customer_id = u.customer_id 
+      INNER JOIN Customer_address ca ON ca.customer_id = c.customer_id
+      LEFT JOIN cart cr ON cr.customer_id = c.customer_id
+      LEFT JOIN cartitems ci ON ci.cart_id = cr.cart_id
+      LEFT JOIN products p ON p.product_id = ci.product_id
+      WHERE u.user_id = ?
+      ORDER BY ci.created_at DESC`,
+      [user.id],
+    );
+
+    if (rows.length > 0) {
+      userData = rows[0];
+      cartItems = rows.filter((row) => row.product_id !== null);
+    }
+
+    await redis.set(
+      cacheKey,
+      JSON.stringify({ userData, cartItems }),
+      "EX",
+      600,
+    );
+  }
+
+  if (!userData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#F0F8FF] via-white to-[#F8F0FF]">
         <div className="text-center">
@@ -68,8 +103,6 @@ export default async function UserPage({ params }: UserPageProps) {
       </div>
     );
   }
-
-  const userData = rows[0];
 
   return (
     <div className="min-h-screen bg-linear-to-b from-[#F0F8FF]/30 via-white to-white">
@@ -195,9 +228,9 @@ export default async function UserPage({ params }: UserPageProps) {
               <Package size={24} className="text-[#6C63FF]" />
               Cart Items
             </h2>
-            {cartRows && cartRows.length > 0 ? (
+            {cartItems && cartItems.length > 0 ? (
               <div className="max-h-85 overflow-y-auto pr-2 space-y-4 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
-                {cartRows.map((item) => (
+                {cartItems.map((item) => (
                   <Link
                     key={item.product_id}
                     href={`/products/${item.product_id}`}

@@ -19,7 +19,7 @@ export default async function RootLayout({
   const totalCartItems = userInfoData?.totalCartItems ?? 0;
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="bg-[#F8F9FA]">
         <Navbar userId={userId} totalCartItems={totalCartItems} />
         {children}
